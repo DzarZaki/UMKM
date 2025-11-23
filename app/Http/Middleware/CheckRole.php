@@ -13,14 +13,12 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Jika belum login
         if (!Auth::check()) {
             return redirect('/login');
         }
 
-        // Cek apakah role user termasuk yang diperbolehkan
         if (!in_array(Auth::user()->role, $roles)) {
             return abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }

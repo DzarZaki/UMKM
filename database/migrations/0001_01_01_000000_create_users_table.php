@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
-            // Ganti email menjadi username
             $table->string('username')->unique();
 
             $table->string('password');
@@ -23,7 +22,6 @@ return new class extends Migration
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            // Ganti email menjadi username sebagai primary key
             $table->string('username')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();

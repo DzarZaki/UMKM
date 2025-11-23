@@ -23,4 +23,9 @@ class Kalender extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function reservasi()
+    {
+        return $this->belongsTo(Reservasi::class);
+    }
+
 }

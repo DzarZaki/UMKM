@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('fotografer', function (Blueprint $table) {
             $table->id();
 
-            // Kolom tambahan
+           
             $table->string('nama_fotografer');
             $table->string('spesialisasi')->nullable();
 
-            // Relasi ke tabel users
+         
             $table->foreignId('user_id')
                   ->constrained('users')
                   ->onUpdate('cascade')
