@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GaleriController;
 
+//home
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
 Route::get('/login', [LoginController::class, 'login'])
     ->name('login')
     ->middleware('guest');
