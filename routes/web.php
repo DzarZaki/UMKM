@@ -3,12 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GaleriController;
+use App\Http\Controllers\ContactController; // Pastikan ini di-import
 
 //home
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/', function () {
+    return view('home');
+});
+
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::get('/login', [LoginController::class, 'login'])
     ->name('login')
@@ -32,3 +38,5 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     // CRUD penuh galeri (admin only)
     Route::resource('/galeri', GaleriController::class);
 });
+
+
