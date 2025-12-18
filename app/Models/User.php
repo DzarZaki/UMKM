@@ -23,6 +23,16 @@ class User extends Authenticatable
         'role',
     ];
 
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isFotografer()
+    {
+        return $this->role === 'fotografer';
+    }
+
     public function fotografer()
     {
         return $this->hasMany(Fotografer::class);
