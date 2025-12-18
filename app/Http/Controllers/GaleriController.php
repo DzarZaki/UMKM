@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\File;
 
 class GaleriController extends Controller
 {
-   
-
     public function index()
     {
         $galeri = Galeri::latest()->get();
@@ -28,17 +26,16 @@ class GaleriController extends Controller
             'file_galeri' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Upload file
         $file = $request->file('file_galeri');
         $namaFile = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('galeri'), $namaFile);
+        $file->move(public_path('uploads/galeri'), $namaFile);
 
         Galeri::create([
             'judul' => $request->judul,
             'file_galeri' => $namaFile,
         ]);
 
-        return redirect()->route('galeri.index')->with('success', 'Data galeri berhasil ditambahkan!');
+        return redirect()->route('galeri.index')->with('success', 'Data berhasil ditambah!');
     }
 
     public function edit($id)
@@ -50,47 +47,38 @@ class GaleriController extends Controller
     public function update(Request $request, $id)
     {
         $galeri = Galeri::findOrFail($id);
-
         $request->validate([
             'judul' => 'required|max:255',
             'file_galeri' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Kalau upload gambar baru
         if ($request->hasFile('file_galeri')) {
-
-            // Hapus file lama
             $pathLama = public_path('galeri/' . $galeri->file_galeri);
-            if (File::exists($pathLama)) {
-                File::delete($pathLama);
-            }
+            if (File::exists($pathLama)) { File::delete($pathLama); }
 
-            // Upload file baru
             $file = $request->file('file_galeri');
             $namaFile = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('galeri'), $namaFile);
-
+            $file->move(public_path('uploads/galeri'), $namaFile);
             $galeri->file_galeri = $namaFile;
         }
 
         $galeri->judul = $request->judul;
         $galeri->save();
-
-        return redirect()->route('galeri.index')->with('success', 'Data galeri berhasil diperbarui!');
+        return redirect()->route('galeri.index')->with('success', 'Data diperbarui!');
     }
 
     public function destroy($id)
     {
         $galeri = Galeri::findOrFail($id);
-
-        // Hapus file fisik
         $path = public_path('galeri/' . $galeri->file_galeri);
-        if (File::exists($path)) {
-            File::delete($path);
-        }
-
+        if (File::exists($path)) { File::delete($path); }
         $galeri->delete();
+        return redirect()->route('galeri.index')->with('success', 'Data dihapus!');
+    }
 
-        return redirect()->route('galeri.index')->with('success', 'Data galeri berhasil dihapus!');
+    public function tampilanHome()
+    {
+        $galeri = Galeri::latest()->get(); 
+        return view('home', compact('galeri'));
     }
 }
