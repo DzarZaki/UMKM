@@ -23,11 +23,15 @@ class DatabaseSeeder extends Seeder
         //     'password' => 'password',
         //     'role' 
         // ]);
-
+        User::create([
+            'username' => 'admin',
+            'password' => Hash::make('password'), 
+            'role'     => 'admin',
+        ]);
         User::create([
             'username' => 'fg',
             'password' => Hash::make('password'), 
-            'role'     => 'fotografer',
+            'role'     => 'fg',
         ]);
     }
 }
