@@ -20,13 +20,13 @@
 <div id="wrapper">
 
     {{-- Sidebar --}}
-    @include('partials.sidebar')
+    @include('partials.sidebar-dash')
 
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
 
             {{-- Topbar --}}
-            @include('partials.topbar')
+            @include('partials.topbar-dash')
 
             {{-- Page Content --}}
             <div class="container-fluid">
@@ -36,7 +36,7 @@
         </div>
 
         {{-- Footer --}}
-        @include('partials.footer')
+        @include('partials.footer-dash')
     </div>
 
 </div>
