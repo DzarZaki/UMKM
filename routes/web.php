@@ -17,7 +17,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 // Grup Admin
 Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        return view('dashboard');
     })->name('dashboard');
 
     // MODE RESOURCE LENGKAP
