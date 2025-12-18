@@ -22,12 +22,13 @@
             
             <div class="col-md-4">
                 <h3 class="footer-title">Get In Touch</h3>
-                <form action="{{ route('contact.store') }}" method="POST"> 
+                <!-- <form action="{{ route('contact.store') }}" method="POST", id = "waForm">  -->
+                    <form id="waForm">
                     @csrf 
-                    <input type="text" name="name" placeholder="Name" class="form-modern" required>
-                    <input type="email" name="email" placeholder="Email" class="form-modern" required>
-                    <input type="tel" name="whatsapp" placeholder="WhatsApp" class="form-modern" required>
-                    <textarea name="message" placeholder="Message" class="form-modern" rows="3"></textarea>
+                    <input type="text" id="name" placeholder="Name" class="form-modern" required>
+                    <input type="email" id="email" placeholder="Email" class="form-modern" required>
+                    <input type="tel" id="whatsapp" placeholder="WhatsApp" class="form-modern" required>
+                    <textarea id="message" placeholder="Message" class="form-modern" rows="3"></textarea>
                     <button type="submit" class="btn-submit">SEND MESSAGE</button>
                 </form>
             </div>

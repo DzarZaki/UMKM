@@ -22,6 +22,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script src="{{ asset('js/home.js') }}"></script>
+    <script>
+document.getElementById('waForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const message = document.getElementById('message').value;
+    const phone = '6282118111540'; // format internasional (tanpa 0)
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, '_blank');
+});
+</script>
     
     @stack('scripts')
 
