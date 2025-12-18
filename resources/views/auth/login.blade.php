@@ -37,7 +37,11 @@
           <div class="text-center mb-4">
             <h1 class="h4 text-gray-900">Welcome Back!</h1>
           </div>
-
+@if (session('loginError'))
+  <div class="alert alert-danger text-center">
+    {{ session('loginError') }}
+  </div>
+@endif
           <form
             class="user"
             method="POST"
