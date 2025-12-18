@@ -23,3 +23,7 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     // MODE RESOURCE LENGKAP
     Route::resource('galeri', GaleriController::class);
 });
+
+//prewed
+Route::get('/portfolio/prewedding', [GaleriController::class, 'prewedding']);
+Route::get('/portfolio/wedding', [GaleriController::class, 'wedding']);
