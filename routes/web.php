@@ -3,40 +3,23 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GaleriController;
-use App\Http\Controllers\ContactController; // Pastikan ini di-import
+use App\Http\Controllers\ContactController;
 
-//home
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/', function () {
-    return view('home');
-});
-
+// Halaman Depan
+Route::get('/', [GaleriController::class, 'tampilanHome'])->name('home');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-Route::get('/login', [LoginController::class, 'login'])
-    ->name('login')
-    ->middleware('guest');
-
+// Auth
+Route::get('/login', [LoginController::class, 'login'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'authentication']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
-Route::post('/logout', [LoginController::class, 'logout'])
-    ->middleware('auth');
-
-
-// =================================================================
-// SEMUA HALAMAN DI BAWAH HANYA UNTUK ADMIN YANG SUDAH LOGIN
-// =================================================================
+// Grup Admin
 Route::middleware(['auth', 'checkRole:admin'])->group(function () {
-
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    });
+    })->name('dashboard');
 
-    // CRUD penuh galeri (admin only)
-    Route::resource('/galeri', GaleriController::class);
+    // MODE RESOURCE LENGKAP
+    Route::resource('galeri', GaleriController::class);
 });
-
-
