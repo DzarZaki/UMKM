@@ -7,7 +7,6 @@
     {{-- HERO SECTION --}}
     <section class="hero-modern" id="hero"> 
         <div class="hero-video-container">
-            {{-- Karena Anda bilang tidak ada video, saya siapkan fallback ke gambar jika file mp4 tidak ada --}}
             <video autoplay muted loop playsinline>
                 <source src="{{ asset('src/hero-video.mp4') }}" type="video/mp4">
             </video>
@@ -70,7 +69,7 @@
         </div>
     </section>
 
-    {{-- GALLERY SECTION --}}
+    {{-- GALLERY SECTION (Dinamis dari Database) --}}
     <section class="gallery-modern" id="gallery">
         <div class="container">
             <div class="section-header">
@@ -79,28 +78,23 @@
             </div>
             
             <div class="gallery-grid">
-                {{-- Menggunakan file-file yang ada di folder src Anda --}}
-                <div class="gallery-item">
-                    <img src="{{ asset('src/satu.png') }}" alt="Gallery 1">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('src/dua.png') }}" alt="Gallery 2">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('src/tiga.png') }}" alt="Gallery 3">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('src/empat.png') }}" alt="Gallery 4">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('src/g1.png') }}" alt="Gallery 5">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('src/g2.png') }}" alt="Gallery 6">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('src/g3.png') }}" alt="Gallery 7">
-                </div>
+                {{-- 
+                    LOOPING DATA GALERI:
+                    Laravel akan mengulang bagian ini sebanyak data yang ada di tabel 'galeri'
+                --}}
+                @forelse($galeri as $item)
+                    <div class="gallery-item">
+                        <img src="{{ asset('galeri/' . $item->file_galeri) }}" alt="{{ $item->judul }}">
+                        <div class="gallery-overlay">
+                            <span class="gallery-caption">{{ $item->judul }}</span>
+                        </div>
+                    </div>
+                @empty
+                    {{-- Pesan jika database masih kosong --}}
+                    <div class="col-12 text-center text-muted">
+                        <p>Belum ada karya yang diunggah ke galeri.</p>
+                    </div>
+                @endforelse
             </div>
         </div>
     </section>

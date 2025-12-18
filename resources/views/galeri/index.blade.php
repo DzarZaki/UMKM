@@ -35,7 +35,7 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $g->judul }}</td>
                 <td>
-                    <img src="{{ asset('galeri/' . $g->file_galeri) }}" width="120">
+                    <img src="{{ asset('uploads/galeri/' . $g->file_galeri) }}" width="120">
                 </td>
                 <td>
                     {{-- Hanya admin boleh edit/delete --}}
