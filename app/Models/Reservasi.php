@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Reservasi extends Model
 {
     use HasFactory;
-    
+
+    protected $table = 'reservasi';
+
     protected $fillable = [
         'id_fotografer',
         'id_kalender',
@@ -17,14 +20,13 @@ class Reservasi extends Model
         'status_reservasi',
     ];
 
-    
     public function fotografer()
     {
-        return $this->belongsTo(Fotografer::class);
+        return $this->belongsTo(Fotografer::class, 'id_fotografer');
     }
 
     public function kalender()
     {
-        return $this->belongsTo(Kalender::class);
+        return $this->belongsTo(Kalender::class, 'id_kalender');
     }
 }

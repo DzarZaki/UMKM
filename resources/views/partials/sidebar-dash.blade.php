@@ -32,9 +32,9 @@
 
     <!-- Nav Item - Reservasi -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fas fa-calendar"></i>
-            <span>Reservasi</span>
+        <a class="nav-link" href="{{ route('reservasi.index') }}">
+    <i class="fas fa-calendar"></i>
+    <span>Reservasi</span>
         </a>
     </li>
 

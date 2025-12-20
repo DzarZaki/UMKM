@@ -5,6 +5,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\ReservasiController;
+
 
 // Halaman Depan
 Route::get('/', [GaleriController::class, 'tampilanHome'])->name('home');
@@ -23,6 +25,9 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 
     // MODE RESOURCE LENGKAP
     Route::resource('galeri', GaleriController::class);
+
+     //RESERVASI
+    Route::resource('reservasi', ReservasiController::class);
 });
 
 //prewed
@@ -34,4 +39,6 @@ Route::get('/portfolio/prewedding', [PortfolioController::class, 'prewedding'])
 
 Route::get('/portfolio/wedding', [PortfolioController::class, 'wedding'])
     ->name('portfolio.wedding');
+
+
 

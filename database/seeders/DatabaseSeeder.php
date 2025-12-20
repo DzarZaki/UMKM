@@ -23,15 +23,39 @@ class DatabaseSeeder extends Seeder
         //     'password' => 'password',
         //     'role' 
         // ]);
-        User::updateOrcreate([
-            'username' => 'admin',
-            'password' => Hash::make('password'), 
-            'role'     => 'admin',
-        ]);
-        User::updateOrcreate([
-            'username' => 'fg',
-            'password' => Hash::make('password'), 
-            'role'     => 'fotografer',
-        ]);
+
+User::updateOrCreate(
+    ['username' => 'admin'], // kondisi pencarian
+    [
+        'password' => Hash::make('password'),
+        'role'     => 'admin',
+    ]
+);
+
+User::updateOrCreate(
+    ['username' => 'fahri'],
+    [
+        'password' => Hash::make('password'),
+        'role'     => 'fotografer',
+    ]
+);
+
+// VIDEOGRAFER
+        User::updateOrCreate(
+            ['username' => 'aziz'],
+            [
+                'password' => Hash::make('password'),
+                'role'     => 'videografer',
+            ]
+        );
+
+        // FOTOGRAFER + VIDEOGRAFER
+        User::updateOrCreate(
+            ['username' => 'dina'],
+            [
+                'password' => Hash::make('password'),
+                'role'     => 'fotografer_videografer',
+            ]
+        );
     }
 }
