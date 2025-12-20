@@ -69,34 +69,67 @@
         </div>
     </section>
 
+    {{-- RECENT WORKS TITLE --}}
+<section class="recent-works-title">
+    <div class="container">
+        <p class="section-label">OUR PORTFOLIO</p>
+        <h2 class="section-heading">Recent Works</h2>
+    </div>
+</section>
+
+
     {{-- GALLERY SECTION (Dinamis dari Database) --}}
-    <section class="gallery-modern" id="gallery">
-        <div class="container">
-            <div class="section-header">
-                <p class="section-label">OUR PORTFOLIO</p>
-                <h2 class="section-title">Recent Works</h2>
-            </div>
-            
-            <div class="gallery-grid">
-                {{-- 
-                    LOOPING DATA GALERI:
-                    Laravel akan mengulang bagian ini sebanyak data yang ada di tabel 'galeri'
-                --}}
-                @forelse($galeri as $item)
-                    <div class="gallery-item">
-                        <img src="{{ asset('galeri/' . $item->file_galeri) }}" alt="{{ $item->judul }}">
-                        <div class="gallery-overlay">
-                            <span class="gallery-caption">{{ $item->judul }}</span>
-                        </div>
-                    </div>
-                @empty
-                    {{-- Pesan jika database masih kosong --}}
-                    <div class="col-12 text-center text-muted">
-                        <p>Belum ada karya yang diunggah ke galeri.</p>
-                    </div>
-                @endforelse
+   <section class="home-gallery">
+    <div class="gallery-container">
+        <div class="gallery-grid">
+
+
+    {{-- PREWEDDING --}}
+    @if($prewedding)
+        <div class="gallery-item">
+            <img src="{{ asset('uploads/galeri/'.$prewedding->file_galeri) }}">
+            <div class="gallery-overlay">
+                <span>Prewedding</span>
             </div>
         </div>
-    </section>
+    @else
+        <p class="text-muted">Belum ada Prewedding</p>
+    @endif
 
-@endsection
+    {{-- WEDDING --}}
+    @if($wedding)
+        <div class="gallery-item">
+            <img src="{{ asset('uploads/galeri/'.$wedding->file_galeri) }}">
+            <div class="gallery-overlay">
+                <span>Wedding</span>
+            </div>
+        </div>
+    @else
+        <p class="text-muted">Belum ada Wedding</p>
+    @endif
+
+    {{-- WISUDA --}}
+    @if($wisuda)
+        <div class="gallery-item">
+            <img src="{{ asset('uploads/galeri/'.$wisuda->file_galeri) }}">
+            <div class="gallery-overlay">
+                <span>Wisuda</span>
+            </div>
+        </div>
+    @else
+        <p class="text-muted">Belum ada Wisuda</p>
+    @endif
+
+    {{-- LAMARAN --}}
+    @if($lamaran)
+        <div class="gallery-item">
+            <img src="{{ asset('uploads/galeri/'.$lamaran->file_galeri) }}">
+            <div class="gallery-overlay">
+                <span>Lamaran</span>
+            </div>
+        </div>
+    @else
+        <p class="text-muted">Belum ada Lamaran</p>
+    @endif
+
+</div>

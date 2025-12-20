@@ -20,7 +20,7 @@
 
         <div style="margin-top:15px;">
             <label>Gambar Lama</label><br>
-            <img src="{{ asset('galeri/' . $galeri->file_galeri) }}" width="150" style="margin-top:5px;">
+            <img src="{{ asset('uploads/galeri/'.$galeri->file_galeri) }}" width="150"> style="margin-top:5px;">
         </div>
 
         <div style="margin-top:15px;">

@@ -60,7 +60,7 @@
             <option value="">-- Pilih Fotografer / Videografer --</option>
             @foreach ($fotografer as $f)
                 <option value="{{ $f->id }}">
-                    {{ $f->username }} 
+                    {{ $f->username }}  ({{ $f->role }})
                 </option>
             @endforeach
         </select>

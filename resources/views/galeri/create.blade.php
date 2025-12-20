@@ -17,6 +17,17 @@
             @enderror
         </div>
 
+        
+        <div class="mb-3">
+            <label class="form-label">Kategori</label>
+            <select name="kategori" class="form-control" required>
+                <option value="prewedding">Prewedding</option>
+                <option value="wedding">Wedding</option>
+                <option value="wisuda">Wisuda</option>
+                <option value="lamaran">Lamaran</option>
+            </select>
+        </div>
+
         <div style="margin-top:15px;">
             <label>Upload Gambar</label><br>
             <input type="file" name="file_galeri" accept="image/*" required>
