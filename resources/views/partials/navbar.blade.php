@@ -13,9 +13,18 @@
                         PORTFOLIO
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark border-0 bg-dark">
-                        <li><a class="dropdown-item" href="#prewedding">Prewedding</a></li>
-                        <li><hr class="dropdown-divider border-secondary"></li>
-                        <li><a class="dropdown-item" href="#wedding">Wedding</a></li>
+                        <li>
+    <a class="dropdown-item" href="{{ route('portfolio.prewedding') }}">
+        Prewedding
+    </a>
+</li>
+<li><hr class="dropdown-divider border-secondary"></li>
+<li>
+    <a class="dropdown-item" href="{{ route('portfolio.wedding') }}">
+        Wedding
+    </a>
+</li>
+
                     </ul>
                 </li>
                 <li class="nav-item">

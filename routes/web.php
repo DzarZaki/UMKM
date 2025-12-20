@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PortfolioController;
 
 // Halaman Depan
 Route::get('/', [GaleriController::class, 'tampilanHome'])->name('home');
@@ -27,3 +28,10 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 //prewed
 Route::get('/portfolio/prewedding', [GaleriController::class, 'prewedding']);
 Route::get('/portfolio/wedding', [GaleriController::class, 'wedding']);
+
+Route::get('/portfolio/prewedding', [PortfolioController::class, 'prewedding'])
+    ->name('portfolio.prewedding');
+
+Route::get('/portfolio/wedding', [PortfolioController::class, 'wedding'])
+    ->name('portfolio.wedding');
+

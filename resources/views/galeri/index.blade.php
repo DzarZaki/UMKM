@@ -1,65 +1,73 @@
-@extends('admin.dashboard')
+@extends('layouts.dashboard')
+
+@section('title', 'Galeri')
 
 @section('content')
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Galeri</h1>
 
-<div class="container mt-4">
-
-    @if(session('success'))
-        <div style="padding: 10px; background: #d4edda; margin-bottom: 15px;">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <h2>Daftar Galeri</h2>
-
-    {{-- Hanya admin boleh upload --}}
     @if(auth()->user()->role === 'admin')
-        <a href="{{ route('galeri.create') }}" 
-           style="padding:10px; background:#4CAF50; color:white; text-decoration:none; border-radius:5px;">
-            + Tambah Galeri
+        <a href="{{ route('galeri.create') }}" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Galeri
         </a>
     @endif
-
-    <table border="1" width="100%" cellpadding="10" style="margin-top:20px;">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Judul</th>
-                <th>Gambar</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($galeri as $g)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $g->judul }}</td>
-                <td>
-                    <img src="{{ asset('uploads/galeri/' . $g->file_galeri) }}" width="120">
-                </td>
-                <td>
-                    {{-- Hanya admin boleh edit/delete --}}
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('galeri.edit', $g->id) }}">Edit</a> |
-                        <form 
-                            action="{{ route('galeri.destroy', $g->id) }}" 
-                            method="POST" 
-                            style="display:inline"
-                            onsubmit="return confirm('Yakin ingin menghapus?')">
-                            
-                            @csrf
-                            @method('DELETE')
-                            <button style="color:red; background:none; border:none; cursor:pointer;">
-                                Hapus
-                            </button>
-
-                        </form>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Judul</th>
+                        <th>Gambar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($galeri as $item)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $item->judul }}</td>
+                            <td>
+                                <img src="{{ asset('uploads/galeri/'.$item->file_galeri) }}" width="120">
+                            </td>
+                            <td>
+                                @if(auth()->user()->role === 'admin')
+                                    <a href="{{ route('galeri.edit', $item->id) }}" class="btn btn-warning btn-sm">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ route('galeri.destroy', $item->id) }}"
+                                          method="POST"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Yakin ingin menghapus?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                Belum ada data galeri
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 @endsection
