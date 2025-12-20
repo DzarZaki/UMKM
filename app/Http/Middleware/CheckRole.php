@@ -21,8 +21,10 @@ class CheckRole
         }
 
         if (!in_array(Auth::user()->role, $roles)) {
-            return abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+            AUth::logout();
+            return redirect('/login')->withErrors('Role tidak diizinkan');
         }
+        
 
         return $next($request);
     }
