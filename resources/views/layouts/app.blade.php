@@ -26,7 +26,7 @@ document.getElementById('waForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const message = document.getElementById('message').value;
-    const phone = '6282118111540'; // format internasional (tanpa 0)
+    const phone = '628'; // format internasional (tanpa 0) //GANTI NOMOR WHATSAPP DISINI
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
     window.open(url, '_blank');

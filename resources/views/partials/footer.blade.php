@@ -30,6 +30,7 @@
                 <h3 class="footer-title">Get In Touch</h3>
 
                 <form id="waForm">
+                    <textarea id="message" placeholder="Message" class="form-modern" rows="3"></textarea>
                     <button type="submit" class="btn-submit">
                         SEND MESSAGE
                     </button>
