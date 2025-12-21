@@ -9,7 +9,7 @@
 
 @php
     $items = $galeri->where('kategori', $kategori);
-    $max   = $kategori === 'featured' ? 1 : 7;
+    $max   = $kategori === 'featured' ? 1 : 15;
 @endphp
 
 <div class="card shadow mb-4">

@@ -54,10 +54,10 @@ class GaleriController extends Controller
         } else {
             $jumlah = Galeri::where('kategori', $request->kategori)->count();
 
-            if ($jumlah >= 7) {
+            if ($jumlah >= 15) {
                 return back()
                     ->withErrors([
-                        'kategori' => 'Maksimal 7 foto untuk kategori ini'
+                        'kategori' => 'Maksimal 15 foto untuk kategori ini'
                     ])
                     ->withInput();
             }
