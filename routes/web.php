@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KalenderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,9 +66,26 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('/kalender/load', [KalenderController::class, 'load']);
+    Route::post('/kalender/store', [KalenderController::class, 'store']);
+    Route::post('/kalender/update', [KalenderController::class, 'update']);
+    Route::post('/kalender/delete', [KalenderController::class, 'destroy']);
+
     // Galeri (CRUD Admin)
     Route::resource('galeri', GaleriController::class);
 
     // Reservasi (CRUD Admin)
     Route::resource('reservasi', ReservasiController::class);
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Kalender
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/kalender/load', [KalenderController::class, 'load']);
+Route::post('/kalender/store', [KalenderController::class, 'store']);
+Route::post('/kalender/update', [KalenderController::class, 'update']);
+Route::post('/kalender/delete', [KalenderController::class, 'destroy']);

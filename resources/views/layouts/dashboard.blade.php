@@ -13,7 +13,12 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/galeri-admin.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('css/galeri-admin.css') }}" rel="stylesheet"> -->
+
+    <!-- FullCalendar (BENAR) -->
+    <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/main.min.css">
+    <script src="https://unpkg.com/fullcalendar@6.1.11/index.global.min.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -50,13 +55,14 @@
 
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
-<script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
+<!-- <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
 <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
-<script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
+<script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script> -->
+@stack('scripts')
 
 </body>
 </html>

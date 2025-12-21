@@ -7,28 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kalender extends Model
 {
-    use HasFactory;
+    protected $table = 'kalender';
 
-     protected $table = 'kalender';
-    
     protected $fillable = [
-        'user_id',
-        'nama_klien',
-        'nomor _hp',
-        'email',
-        'tanggal',
-        'waktu_mulai',
-        'waktu_selesai',
-    ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function reservasi()
-    {
-        return $this->belongsTo(Reservasi::class);
-    }
-
+    'user_id',
+    'nama_klien',
+    'nomor_hp',
+    'email',
+    'tanggal',
+    'waktu_mulai',
+    'waktu_selesai'
+];
+    public $timestamps = false;
 }
