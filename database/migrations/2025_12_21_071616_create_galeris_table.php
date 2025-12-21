@@ -7,19 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('galeris', function (Blueprint $table) {
-            $table->id();
-            $table->string('judul');
-            $table->string('file_galeri');
-            $table->enum('kategori', [
-                'featured',
-                'prewedding',
-                'wedding',
-                'wisuda',
-                'lamaran'
-            ]);
-            $table->timestamps();
-        });
+       Schema::create('galeri', function (Blueprint $table) {
+    $table->id();
+    $table->string('judul');
+    $table->string('file_galeri');
+    $table->enum('kategori', [
+        'featured',
+        'prewedding',
+        'wedding',
+        'wisuda',
+        'lamaran'
+    ])->nullable();
+    $table->timestamps();
+});
+
     }
 
     public function down(): void
