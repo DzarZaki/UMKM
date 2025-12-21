@@ -5,71 +5,63 @@
 @section('content')
 <h1 class="h3 mb-4 text-gray-800">Manajemen Galeri</h1>
 
-@foreach(['prewedding','wedding','wisuda','lamaran'] as $kategori)
+@foreach(['featured','prewedding','wedding','wisuda','lamaran'] as $kategori)
 
 @php
     $items = $galeri->where('kategori', $kategori);
-    $count = $items->count();
+    $max   = $kategori === 'featured' ? 1 : 7;
 @endphp
 
 <div class="card shadow mb-4">
 
-    {{-- CARD HEADER --}}
-    <div class="card-header d-flex justify-content-between align-items-center">
+    {{-- HEADER --}}
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <div>
             <h6 class="m-0 font-weight-bold text-primary text-capitalize">
-                {{ $kategori }}
+                {{ $kategori === 'featured' ? 'Featured Background (Home)' : ucfirst($kategori) }}
             </h6>
-            <small class="text-muted">{{ $count }} / 7 foto</small>
+            <small class="text-muted">{{ $items->count() }} / {{ $max }} foto</small>
         </div>
 
-        @if($count < 7)
+        @if($items->count() < $max)
             <button class="btn btn-primary"
                     data-toggle="modal"
-                    data-target="#modalTambah"
-                    data-kategori="{{ $kategori }}">
+                    data-target="#modalTambah">
                 + Tambah Galeri
             </button>
         @endif
     </div>
 
-    {{-- CARD BODY --}}
+    {{-- BODY --}}
     <div class="card-body">
-        @if($count === 0)
-            <p class="text-muted mb-0">Belum ada foto.</p>
+        @if($items->count() === 0)
+            <p class="text-muted mb-0">Belum ada data.</p>
         @else
             <div class="row">
                 @foreach($items as $item)
-                    <div class="col-md-3 mb-4">
+                    <div class="col-md-3 mb-4 text-center">
 
-                        {{-- ITEM --}}
-                        <div class="gallery-admin-item position-relative">
-                            <img src="{{ asset('uploads/galeri/'.$item->file_galeri) }}"
-                                 class="img-fluid rounded">
+                        <img src="{{ asset('uploads/galeri/'.$item->file_galeri) }}"
+                             class="img-fluid rounded mb-2"
+                             style="max-height:180px; object-fit:cover;">
 
-                            {{-- OVERLAY --}}
-                            <div class="gallery-admin-overlay text-center">
-                                <button class="btn btn-warning btn-sm mb-1"
-                                        data-toggle="modal"
-                                        data-target="#modalEdit{{ $item->id }}">
-                                    Edit
-                                </button>
+                        <p class="small mb-2">{{ $item->judul }}</p>
 
-                                <button class="btn btn-danger btn-sm"
-                                        data-toggle="modal"
-                                        data-target="#modalHapus{{ $item->id }}">
-                                    Hapus
-                                </button>
-                            </div>
-                        </div>
+                        <button class="btn btn-warning btn-sm"
+                                data-toggle="modal"
+                                data-target="#modalEdit{{ $item->id }}">
+                            Edit
+                        </button>
 
-                        <p class="small text-center mt-2 mb-0">
-                            {{ $item->judul }}
-                        </p>
+                        <button class="btn btn-danger btn-sm"
+                                data-toggle="modal"
+                                data-target="#modalHapus{{ $item->id }}">
+                            Hapus
+                        </button>
                     </div>
 
                     {{-- MODAL EDIT --}}
-                    <div class="modal fade" id="modalEdit{{ $item->id }}" tabindex="-1">
+                    <div class="modal fade" id="modalEdit{{ $item->id }}">
                         <div class="modal-dialog">
                             <form action="{{ route('galeri.update', $item->id) }}"
                                   method="POST"
@@ -96,9 +88,9 @@
                                     <div class="form-group">
                                         <label>Kategori</label>
                                         <select name="kategori" class="form-control">
-                                            @foreach(['prewedding','wedding','wisuda','lamaran'] as $kat)
+                                            @foreach(['featured','prewedding','wedding','wisuda','lamaran'] as $kat)
                                                 <option value="{{ $kat }}"
-                                                    {{ $item->kategori == $kat ? 'selected' : '' }}>
+                                                    {{ $item->kategori === $kat ? 'selected' : '' }}>
                                                     {{ ucfirst($kat) }}
                                                 </option>
                                             @endforeach
@@ -110,9 +102,7 @@
                                         <img src="{{ asset('uploads/galeri/'.$item->file_galeri) }}"
                                              width="100"
                                              class="mb-2">
-                                        <input type="file"
-                                               name="file_galeri"
-                                               class="form-control">
+                                        <input type="file" name="file_galeri" class="form-control">
                                     </div>
                                 </div>
 
@@ -125,7 +115,7 @@
                     </div>
 
                     {{-- MODAL HAPUS --}}
-                    <div class="modal fade" id="modalHapus{{ $item->id }}" tabindex="-1">
+                    <div class="modal fade" id="modalHapus{{ $item->id }}">
                         <div class="modal-dialog modal-dialog-centered">
                             <form action="{{ route('galeri.destroy', $item->id) }}"
                                   method="POST"
@@ -153,8 +143,8 @@
 
 @endforeach
 
-{{-- MODAL TAMBAH (HANYA 1x) --}}
-<div class="modal fade" id="modalTambah" tabindex="-1">
+{{-- MODAL TAMBAH --}}
+<div class="modal fade" id="modalTambah">
     <div class="modal-dialog">
         <form action="{{ route('galeri.store') }}"
               method="POST"
@@ -176,6 +166,7 @@
                 <div class="form-group">
                     <label>Kategori</label>
                     <select name="kategori" class="form-control" required>
+                        <option value="featured">Featured (Background Home)</option>
                         <option value="prewedding">Prewedding</option>
                         <option value="wedding">Wedding</option>
                         <option value="wisuda">Wisuda</option>

@@ -32,20 +32,38 @@ class GaleriController extends Controller
     {
         $request->validate([
             'judul'       => 'required|max:255',
-            'kategori'    => 'required|in:prewedding,wedding,wisuda,lamaran',
+            'kategori'    => 'required|in:prewedding,wedding,wisuda,lamaran,featured',
             'file_galeri' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $jumlah = Galeri::where('kategori', $request->kategori)->count();
+        /**
+         * RULE JUMLAH FOTO
+         * - featured : max 1
+         * - lainnya  : max 7
+         */
+        if ($request->kategori === 'featured') {
+            $jumlah = Galeri::where('kategori', 'featured')->count();
 
-    if ($jumlah >= 7) {
-        return back()
-            ->withErrors([
-                'file_galeri' => 'Maksimal 7 foto untuk kategori ini'
-            ])
-            ->withInput();
-    }
+            if ($jumlah >= 1) {
+                return back()
+                    ->withErrors([
+                        'kategori' => 'Featured hanya boleh 1 foto'
+                    ])
+                    ->withInput();
+            }
+        } else {
+            $jumlah = Galeri::where('kategori', $request->kategori)->count();
 
+            if ($jumlah >= 7) {
+                return back()
+                    ->withErrors([
+                        'kategori' => 'Maksimal 7 foto untuk kategori ini'
+                    ])
+                    ->withInput();
+            }
+        }
+
+        // upload file
         $file = $request->file('file_galeri');
         $namaFile = time() . '_' . $file->getClientOriginalName();
         $file->move(public_path('uploads/galeri'), $namaFile);
@@ -79,9 +97,26 @@ class GaleriController extends Controller
 
         $request->validate([
             'judul'       => 'required|max:255',
-            'kategori'    => 'required|in:prewedding,wedding,wisuda,lamaran',
+            'kategori'    => 'required|in:prewedding,wedding,wisuda,lamaran,featured',
             'file_galeri' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        /**
+         * Cegah featured lebih dari 1 (saat update)
+         */
+        if ($request->kategori === 'featured') {
+            $jumlah = Galeri::where('kategori', 'featured')
+                ->where('id', '!=', $galeri->id)
+                ->count();
+
+            if ($jumlah >= 1) {
+                return back()
+                    ->withErrors([
+                        'kategori' => 'Featured hanya boleh 1 foto'
+                    ])
+                    ->withInput();
+            }
+        }
 
         if ($request->hasFile('file_galeri')) {
             $pathLama = public_path('uploads/galeri/' . $galeri->file_galeri);

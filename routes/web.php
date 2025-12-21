@@ -22,19 +22,19 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 // Portfolio (Public)
 Route::prefix('portfolio')->group(function () {
-    Route::get('/portfolio/prewedding', [PortfolioController::class, 'prewedding'])
-    ->name('portfolio.prewedding');
 
-Route::get('/portfolio/wedding', [PortfolioController::class, 'wedding'])
-    ->name('portfolio.wedding');
+    Route::get('/prewedding', [PortfolioController::class, 'prewedding'])
+        ->name('portfolio.prewedding');
 
-// 
-Route::get('/portfolio/wisuda', [PortfolioController::class, 'wisuda'])
-    ->name('portfolio.wisuda');
+    Route::get('/wedding', [PortfolioController::class, 'wedding'])
+        ->name('portfolio.wedding');
 
-// 
-Route::get('/portfolio/lamaran', [PortfolioController::class, 'lamaran'])
-    ->name('portfolio.lamaran');
+    Route::get('/wisuda', [PortfolioController::class, 'wisuda'])
+        ->name('portfolio.wisuda');
+
+    Route::get('/lamaran', [PortfolioController::class, 'lamaran'])
+        ->name('portfolio.lamaran');
+
 });
 
 /*

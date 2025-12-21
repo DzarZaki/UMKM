@@ -23,24 +23,17 @@
     </section>
 
     {{-- FEATURED SECTION --}}
-    <section class="featured-section" id="featured" style="background-image: url('{{ asset('src/hero2.jpg') }}');">
+    <section class="featured-section" id="featured"
+    style="
+        background-image: 
+        @if($featured)
+            url('{{ asset('uploads/galeri/'.$featured->file_galeri) }}')
+        @else
+            url('{{ asset('src/hero2.jpg') }}')
+        @endif
+    ;">
+
         <div class="featured-overlay"></div>
-        <div class="container">
-            <div class="featured-content">
-                <p class="featured-label">FEATURED WORK</p>
-                <h2 class="featured-title">Hardi & Jesslyn<br>Wedding Day</h2>
-                <p class="featured-desc">
-                    An intimate celebration of love captured in the breathtaking landscapes of Bali. 
-                    Every moment tells a story of elegance and emotion.
-                </p>
-                <a href="#" class="btn-explore">
-                    VIEW FULL STORY
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
     </section>
 
     {{-- STATS SECTION --}}
@@ -70,66 +63,70 @@
     </section>
 
     {{-- RECENT WORKS TITLE --}}
-<section class="recent-works-title">
+<section class="recent-works-title text-center">
     <div class="container">
         <p class="section-label">OUR PORTFOLIO</p>
         <h2 class="section-heading">Recent Works</h2>
     </div>
 </section>
 
+{{-- HOME GALLERY --}}
+<section class="home-gallery">
+    <div class="container">
+        <div class="row justify-content-center">
 
-    {{-- GALLERY SECTION (Dinamis dari Database) --}}
-   <section class="home-gallery">
-    <div class="gallery-container">
-        <div class="gallery-grid">
+            {{-- PREWEDDING --}}
+            @if($prewedding)
+                <div class="col-md-3 mb-4">
+                    <a href="{{ route('portfolio.prewedding') }}" class="home-gallery-link">
+                        <div class="home-gallery-card">
+                            <img src="{{ asset('uploads/galeri/'.$prewedding->file_galeri) }}"
+                                 class="img-fluid">
+                        </div>
+                        <p class="home-gallery-title">Prewedding</p>
+                    </a>
+                </div>
+            @endif
 
+            {{-- WEDDING --}}
+            @if($wedding)
+                <div class="col-md-3 mb-4">
+                    <a href="{{ route('portfolio.wedding') }}" class="home-gallery-link">
+                        <div class="home-gallery-card">
+                            <img src="{{ asset('uploads/galeri/'.$wedding->file_galeri) }}"
+                                 class="img-fluid">
+                        </div>
+                        <p class="home-gallery-title">Wedding</p>
+                    </a>
+                </div>
+            @endif
 
-    {{-- PREWEDDING --}}
-    @if($prewedding)
-        <div class="gallery-item">
-            <img src="{{ asset('uploads/galeri/'.$prewedding->file_galeri) }}">
-            <div class="gallery-overlay">
-                <span>Prewedding</span>
-            </div>
+            {{-- WISUDA --}}
+            @if($wisuda)
+                <div class="col-md-3 mb-4">
+                    <a href="{{ route('portfolio.wisuda') }}" class="home-gallery-link">
+                        <div class="home-gallery-card">
+                            <img src="{{ asset('uploads/galeri/'.$wisuda->file_galeri) }}"
+                                 class="img-fluid">
+                        </div>
+                        <p class="home-gallery-title">Wisuda</p>
+                    </a>
+                </div>
+            @endif
+
+            {{-- LAMARAN --}}
+            @if($lamaran)
+                <div class="col-md-3 mb-4">
+                    <a href="{{ route('portfolio.lamaran') }}" class="home-gallery-link">
+                        <div class="home-gallery-card">
+                            <img src="{{ asset('uploads/galeri/'.$lamaran->file_galeri) }}"
+                                 class="img-fluid">
+                        </div>
+                        <p class="home-gallery-title">Lamaran</p>
+                    </a>
+                </div>
+            @endif
+
         </div>
-    @else
-        <p class="text-muted">Belum ada Prewedding</p>
-    @endif
-
-    {{-- WEDDING --}}
-    @if($wedding)
-        <div class="gallery-item">
-            <img src="{{ asset('uploads/galeri/'.$wedding->file_galeri) }}">
-            <div class="gallery-overlay">
-                <span>Wedding</span>
-            </div>
-        </div>
-    @else
-        <p class="text-muted">Belum ada Wedding</p>
-    @endif
-
-    {{-- WISUDA --}}
-    @if($wisuda)
-        <div class="gallery-item">
-            <img src="{{ asset('uploads/galeri/'.$wisuda->file_galeri) }}">
-            <div class="gallery-overlay">
-                <span>Wisuda</span>
-            </div>
-        </div>
-    @else
-        <p class="text-muted">Belum ada Wisuda</p>
-    @endif
-
-    {{-- LAMARAN --}}
-    @if($lamaran)
-        <div class="gallery-item">
-            <img src="{{ asset('uploads/galeri/'.$lamaran->file_galeri) }}">
-            <div class="gallery-overlay">
-                <span>Lamaran</span>
-            </div>
-        </div>
-    @else
-        <p class="text-muted">Belum ada Lamaran</p>
-    @endif
-
-</div>
+    </div>
+</section>

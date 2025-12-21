@@ -566,3 +566,34 @@ body {
 .gallery-admin-item:hover .gallery-admin-overlay {
     opacity: 1;
 }
+
+.home-gallery-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.home-gallery-card {
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform .3s ease;
+}
+
+.home-gallery-card img {
+    width: 100%;
+    height: 360px;
+    object-fit: cover;
+    border-radius: 18px;
+}
+
+.home-gallery-card:hover {
+    transform: scale(1.03);
+}
+
+.home-gallery-title {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: #ddd;
+    text-transform: uppercase;
+}

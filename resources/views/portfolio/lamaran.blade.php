@@ -3,19 +3,20 @@
 @section('title', 'Portfolio Lamaran')
 
 @section('content')
-<section class="gallery-modern">
-    <div class="container">
-        <h2 class="section-title">Portfolio Lamaran</h2>
+<div class="container mt-5">
+    <h1 class="text-white mb-4">Portfolio Lamaran</h1>
 
-        <div class="gallery-grid">
-            @forelse($galeri as $item)
-                <div class="gallery-item">
-                    <img src="{{ asset('uploads/galeri/'.$item->file_galeri) }}">
+    <div class="portfolio-grid">
+        @forelse($galeri as $item)
+            <div class="portfolio-card">
+                <div class="portfolio-image">
+                    <img src="{{ asset('uploads/galeri/'.$item->file_galeri) }}"
+                         alt="{{ $item->judul }}">
                 </div>
-            @empty
-                <p class="text-center text-muted">Belum ada foto lamaran</p>
-            @endforelse
-        </div>
+            </div>
+        @empty
+            <p class="text-muted">Belum ada foto lamaran.</p>
+        @endforelse
     </div>
-</section>
+</div>
 @endsection
