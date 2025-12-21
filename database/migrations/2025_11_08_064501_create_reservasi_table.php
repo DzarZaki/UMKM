@@ -12,29 +12,36 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reservasi', function (Blueprint $table) {
-            $table->id();
+    $table->id();
 
-            // Foreign key ke tabel fotografer
-            $table->foreignId('id_fotografer')
-                  ->constrained('fotografer')
-                  ->onUpdate('cascade')
-                  ->onDelete('cascade');
+    $table->foreignId('id_fotografer')
+      ->nullable()
+      ->constrained('fotografer')
+      ->nullOnDelete();
 
-            // Foreign key ke tabel kalender
-            $table->foreignId('id_kalender')
-                  ->constrained('kalender')
-                  ->onUpdate('cascade')
-                  ->onDelete('cascade');
+    $table->foreignId('id_kalender')
+      ->nullable()
+      ->constrained('kalender')
+      ->nullOnDelete();
 
-            // Data tambahan
-            $table->string('nama_klien');
-            $table->string('email');
-            $table->date('tanggal');
-            $table->enum('status_reservasi', ['pending', 'confirmed', 'cancelled'])
-                  ->default('pending');
 
-            $table->timestamps();
-        });
+    $table->string('nama');
+    $table->string('email');
+    $table->string('no_hp');
+
+    $table->string('tipe_paket')->nullable();
+    $table->date('tanggal');
+    $table->time('waktu_mulai');
+    $table->time('waktu_selesai');
+
+    $table->text('keterangan')->nullable();
+
+    $table->enum('status', ['pending','in_progress','done'])
+          ->default('pending');
+
+    $table->timestamps();
+});
+
     }
 
     /**

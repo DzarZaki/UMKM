@@ -1,0 +1,56 @@
+@extends('layouts.app')
+
+@section('title','Booking')
+
+@section('content')
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <h3 class="text-center mb-4">Get In Touch</h3>
+
+            <form action="{{ route('booking.store') }}" method="POST">
+                @csrf
+
+                <input class="form-control mb-3" name="nama" placeholder="Nama" required>
+                <input class="form-control mb-3" name="email" placeholder="Email" required>
+                <input class="form-control mb-3" name="no_hp" placeholder="Nomor Handphone" required>
+
+                <input class="form-control mb-3" name="tipe_paket" placeholder="Tipe Paket (Opsional)">
+
+                <input type="date" class="form-control mb-3" name="tanggal" required>
+                <div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label text-white">Waktu Mulai</label>
+        <input type="time"
+               name="waktu_mulai"
+               class="form-control"
+               required>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label text-white">Waktu Selesai</label>
+        <input type="time"
+               name="waktu_selesai"
+               class="form-control"
+               required>
+    </div>
+</div>
+
+
+                <textarea class="form-control mb-3" name="keterangan"
+                          placeholder="Keterangan (Opsional)"></textarea>
+
+                <button class="btn btn-primary w-100">Kirim Booking</button>
+                @if(session('success'))
+    <div class="alert alert-success text-center">
+        {{ session('success') }}
+    </div>
+@endif
+
+            </form>
+
+        </div>
+    </div>
+</div>
+@endsection

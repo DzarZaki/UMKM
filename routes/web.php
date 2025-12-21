@@ -1,13 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\GaleriController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\PortfolioController;
-use App\Http\Controllers\ReservasiController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\KalenderController;
+use App\Http\Controllers\{
+    LoginController,
+    GaleriController,
+    ContactController,
+    PortfolioController,
+    ReservasiController,
+    HomeController,
+    KalenderController,
+    PemesananController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -19,24 +22,23 @@ use App\Http\Controllers\KalenderController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Contact
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/contact', [ContactController::class, 'store'])
+    ->name('contact.store');
 
 // Portfolio (Public)
-Route::prefix('portfolio')->group(function () {
-
-    Route::get('/prewedding', [PortfolioController::class, 'prewedding'])
-        ->name('portfolio.prewedding');
-
-    Route::get('/wedding', [PortfolioController::class, 'wedding'])
-        ->name('portfolio.wedding');
-
-    Route::get('/wisuda', [PortfolioController::class, 'wisuda'])
-        ->name('portfolio.wisuda');
-
-    Route::get('/lamaran', [PortfolioController::class, 'lamaran'])
-        ->name('portfolio.lamaran');
-
+Route::prefix('portfolio')->name('portfolio.')->group(function () {
+    Route::get('/prewedding', [PortfolioController::class, 'prewedding'])->name('prewedding');
+    Route::get('/wedding',    [PortfolioController::class, 'wedding'])->name('wedding');
+    Route::get('/wisuda',     [PortfolioController::class, 'wisuda'])->name('wisuda');
+    Route::get('/lamaran',    [PortfolioController::class, 'lamaran'])->name('lamaran');
 });
+
+// Booking dari Home (Public)
+Route::get('/booking', [PemesananController::class, 'create'])
+    ->name('booking.form');
+
+Route::post('/booking', [PemesananController::class, 'store'])
+    ->name('booking.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,11 +46,11 @@ Route::prefix('portfolio')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [LoginController::class, 'login'])
-    ->name('login')
-    ->middleware('guest');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'login'])->name('login');
+    Route::post('/login', [LoginController::class, 'authentication']);
+});
 
-Route::post('/login', [LoginController::class, 'authentication']);
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
@@ -66,26 +68,41 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/kalender/load', [KalenderController::class, 'load']);
-    Route::post('/kalender/store', [KalenderController::class, 'store']);
-    Route::post('/kalender/update', [KalenderController::class, 'update']);
-    Route::post('/kalender/delete', [KalenderController::class, 'destroy']);
-
-    // Galeri (CRUD Admin)
+    /*
+    |--------------------------------------------------------------------------
+    | GALERI (CRUD)
+    |--------------------------------------------------------------------------
+    */
     Route::resource('galeri', GaleriController::class);
 
-    // Reservasi (CRUD Admin)
+    /*
+    |--------------------------------------------------------------------------
+    | RESERVASI
+    |--------------------------------------------------------------------------
+    */
     Route::resource('reservasi', ReservasiController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | PEMESANAN
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/pemesanan', [PemesananController::class, 'index'])
+        ->name('pemesanan.index');
+
+    Route::patch('/pemesanan/{id}/status', [PemesananController::class, 'updateStatus'])
+        ->name('pemesanan.status');
+
+    /*
+    |--------------------------------------------------------------------------
+    | KALENDER (ADMIN)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('kalender')->group(function () {
+        Route::get('/load',   [KalenderController::class, 'load']);
+        Route::post('/store', [KalenderController::class, 'store']);
+        Route::post('/update',[KalenderController::class, 'update']);
+        Route::post('/delete',[KalenderController::class, 'destroy']);
+    });
+
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| Kalender
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/kalender/load', [KalenderController::class, 'load']);
-Route::post('/kalender/store', [KalenderController::class, 'store']);
-Route::post('/kalender/update', [KalenderController::class, 'update']);
-Route::post('/kalender/delete', [KalenderController::class, 'destroy']);

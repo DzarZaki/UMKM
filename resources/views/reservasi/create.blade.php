@@ -20,47 +20,90 @@
     {{-- Nama Klien --}}
     <div class="mb-3">
         <label class="form-label">Nama Klien</label>
-        <input
-            type="text"
-            name="nama_klien"
-            class="form-control"
-            value="{{ old('nama_klien') }}"
-            required
-        >
+        <input type="text"
+               name="nama"
+               class="form-control"
+               value="{{ old('nama') }}"
+               required>
     </div>
 
     {{-- Email --}}
     <div class="mb-3">
         <label class="form-label">Email</label>
-        <input
-            type="email"
-            name="email"
-            class="form-control"
-            value="{{ old('email') }}"
-            required
-        >
+        <input type="email"
+               name="email"
+               class="form-control"
+               value="{{ old('email') }}"
+               required>
     </div>
 
-    {{-- Tanggal Reservasi --}}
+    {{-- Nomor HP --}}
+    <div class="mb-3">
+        <label class="form-label">Nomor HP</label>
+        <input type="text"
+               name="no_hp"
+               class="form-control"
+               value="{{ old('no_hp') }}"
+               required>
+    </div>
+
+    {{-- Tipe Paket --}}
+    <div class="mb-3">
+        <label class="form-label">Tipe Paket (Opsional)</label>
+        <input type="text"
+               name="tipe_paket"
+               class="form-control"
+               value="{{ old('tipe_paket') }}">
+    </div>
+
+    {{-- Tanggal --}}
     <div class="mb-3">
         <label class="form-label">Tanggal Reservasi</label>
-        <input
-            type="date"
-            name="tanggal"
-            class="form-control"
-            value="{{ old('tanggal') }}"
-            required
-        >
+        <input type="date"
+               name="tanggal"
+               class="form-control"
+               value="{{ old('tanggal') }}"
+               required>
     </div>
 
-    {{-- Fotografer (dari tabel users role=fotografer) --}}
+    {{-- Waktu --}}
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Waktu Mulai</label>
+            <input type="time"
+                   name="waktu_mulai"
+                   class="form-control"
+                   value="{{ old('waktu_mulai') }}"
+                   required>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Waktu Selesai</label>
+            <input type="time"
+                   name="waktu_selesai"
+                   class="form-control"
+                   value="{{ old('waktu_selesai') }}"
+                   required>
+        </div>
+    </div>
+
+    {{-- Keterangan --}}
     <div class="mb-3">
-        <label class="form-label">Fotografer</label>
-                <select name="id_fotografer" class="form-control" required>
+        <label class="form-label">Keterangan (Opsional)</label>
+        <textarea name="keterangan"
+                  class="form-control"
+                  rows="3">{{ old('keterangan') }}</textarea>
+    </div>
+
+    {{-- Fotografer --}}
+    <div class="mb-3">
+        <label class="form-label">Fotografer / Videografer</label>
+        <select name="id_fotografer" class="form-control">
             <option value="">-- Pilih Fotografer / Videografer --</option>
             @foreach ($fotografer as $f)
-                <option value="{{ $f->id }}">
-                    {{ $f->username }}  ({{ $f->role }})
+                <option value="{{ $f->id }}"
+                    {{ old('id_fotografer') == $f->id ? 'selected' : '' }}>
+                    {{ $f->username }} ({{ $f->role }})
                 </option>
             @endforeach
         </select>
@@ -69,32 +112,24 @@
     {{-- Kalender --}}
     <div class="mb-3">
         <label class="form-label">Kalender</label>
-        <select name="id_kalender" class="form-control" required>
+        <select name="id_kalender" class="form-control">
             <option value="">-- Pilih Kalender --</option>
             @foreach ($kalender as $k)
-                <option
-                    value="{{ $k->id }}"
-                    {{ old('id_kalender') == $k->id ? 'selected' : '' }}
-                >
+                <option value="{{ $k->id }}"
+                    {{ old('id_kalender') == $k->id ? 'selected' : '' }}>
                     {{ $k->tanggal }} ({{ $k->waktu_mulai }} - {{ $k->waktu_selesai }})
                 </option>
             @endforeach
         </select>
     </div>
 
-    {{-- Status Reservasi --}}
+    {{-- Status --}}
     <div class="mb-3">
         <label class="form-label">Status Reservasi</label>
-        <select name="status_reservasi" class="form-control">
-            <option value="pending" {{ old('status_reservasi') == 'pending' ? 'selected' : '' }}>
-                Pending
-            </option>
-            <option value="confirmed" {{ old('status_reservasi') == 'confirmed' ? 'selected' : '' }}>
-                Confirmed
-            </option>
-            <option value="cancelled" {{ old('status_reservasi') == 'cancelled' ? 'selected' : '' }}>
-                Cancelled
-            </option>
+        <select name="status" class="form-control">
+            <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+            <option value="done" {{ old('status') == 'done' ? 'selected' : '' }}>Done</option>
         </select>
     </div>
 

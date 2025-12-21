@@ -39,29 +39,29 @@ class ReservasiController extends Controller
      * Simpan data reservasi
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'id_fotografer'    => 'required|exists:users,id',
-            'id_kalender'      => 'required|exists:kalender,id',
-            'nama_klien'       => 'required|string|max:255',
-            'email'            => 'required|email',
-            'tanggal'          => 'required|date',
-            'status_reservasi' => 'required|in:pending,confirmed,cancelled',
-        ]);
+{
+    $request->validate([
+        'nama'        => 'required|string|max:255',
+        'email'       => 'required|email',
+        'no_hp'       => 'required|string|max:20',
+        'tipe_paket'  => 'nullable|string|max:255',
+        'tanggal'     => 'required|date',
+        'waktu_mulai' => 'required',
+        'waktu_selesai' => 'required|after:waktu_mulai',
+        'keterangan'  => 'nullable|string',
 
-        Reservasi::create([
-            'id_fotografer'    => $request->id_fotografer,
-            'id_kalender'      => $request->id_kalender,
-            'nama_klien'       => $request->nama_klien,
-            'email'            => $request->email,
-            'tanggal'          => $request->tanggal,
-            'status_reservasi' => $request->status_reservasi,
-        ]);
+        'id_fotografer' => 'nullable|exists:users,id',
+        'id_kalender'   => 'nullable|exists:kalender,id',
+        'status'        => 'required|in:pending,in_progress,done',
+    ]);
 
-        return redirect()
-            ->route('reservasi.index')
-            ->with('success', 'Reservasi berhasil ditambahkan');
-    }
+    Reservasi::create($request->all());
+
+    return redirect()
+        ->route('reservasi.index')
+        ->with('success', 'Reservasi berhasil ditambahkan');
+}
+
 
     /**
      * Tampilkan form edit reservasi
