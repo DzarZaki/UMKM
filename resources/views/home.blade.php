@@ -13,8 +13,8 @@
         </div>
         <div class="hero-overlay">
             <div class="hero-content">
-                <h1 class="hero-title">DZAR</h1>
-                <p class="hero-subtitle">CAPTURING TIMELESS MOMENTS</p>
+                <h1 class="hero-title">DZAR PROJECT</h1>
+                <p class="hero-subtitle">Time Journey</p>
             </div>
         </div>
         <div class="scroll-indicator">

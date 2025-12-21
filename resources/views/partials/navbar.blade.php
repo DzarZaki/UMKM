@@ -3,9 +3,9 @@
 
         {{-- BRAND / LOGO --}}
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-            {{-- Kalau nanti mau pakai gambar logo, tinggal ganti --}}
-            {{-- <img src="{{ asset('images/logo.png') }}" alt="DZAR" height="32" class="me-2"> --}}
-            DZAR
+            <img src="{{ asset('images/logo-dzar.png') }}"
+                 alt="DZAR Logo"
+                 class="navbar-logo">
         </a>
 
         {{-- MOBILE TOGGLE --}}
@@ -54,7 +54,6 @@
 
                         <li><hr class="dropdown-divider border-secondary"></li>
 
-                        
                         <li>
                             <a class="dropdown-item"
                                href="{{ route('portfolio.wisuda') }}">
@@ -64,7 +63,6 @@
 
                         <li><hr class="dropdown-divider border-secondary"></li>
 
-                      
                         <li>
                             <a class="dropdown-item"
                                href="{{ route('portfolio.lamaran') }}">
@@ -75,7 +73,7 @@
                     </ul>
                 </li>
 
-                {{-- PRICELIST (GOOGLE DRIVE) --}}
+                {{-- PRICELIST --}}
                 <li class="nav-item">
                     <a class="nav-link"
                        href="https://drive.google.com/file/d/18_nfvGHXI-E4hhz19Y9fEqP8pEyh1Bnn/view"
