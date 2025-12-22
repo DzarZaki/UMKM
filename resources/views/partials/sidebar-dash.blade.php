@@ -34,7 +34,7 @@
     <li class="nav-item">
         <a class="nav-link" href="{{ route('reservasi.index') }}">
     <i class="fas fa-calendar"></i>
-    <span>Reservasi</span>
+    <span>Booking</span>
         </a>
     </li>
 
