@@ -10,7 +10,7 @@
         @foreach($galeri as $item)
             <div class="col-md-4">
                 <div class="portfolio-item">
-                    <img src="{{ asset("uploads/galeri/{$item->file_galeri}") }}"
+                    <img src="{{ asset('uploads/galeri/{$item->file_galeri}') }}"
                          alt="{{ $item->judul }}"
                          class="img-fluid">
                 </div>

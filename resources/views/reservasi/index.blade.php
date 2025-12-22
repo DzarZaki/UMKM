@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<h1 class="h3 mb-4 text-gray-800">Reservasi</h1>
+<h1 class="h3 mb-4 text-gray-800">Booking</h1>
 
 {{-- Tombol Tambah Reservasi --}}
 <a href="{{ route('reservasi.create') }}"
    class="btn btn-primary mb-3">
-    + Tambah Reservasi
+    + Tambah Booking
 </a>
 
 {{-- Pesan sukses --}}

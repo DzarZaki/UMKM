@@ -9,6 +9,7 @@ use App\Http\Controllers\{
     ReservasiController,
     HomeController,
     KalenderController,
+    KalenderMirrorController,
     PemesananController
 };
 
@@ -106,3 +107,17 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     });
 
 });
+
+/*
+    |--------------------------------------------------------------------------
+    | KALENDER MIRROR (PUBLIC)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/booking/kalender', [KalenderMirrorController::class, 'index'])
+    ->name('booking.kalender');
+
+// endpoint JSON untuk FullCalendar ambil data booked
+Route::get('/booking/kalender/events', [KalenderMirrorController::class, 'events'])
+    ->name('booking.kalender.events')
+    ->middleware('throttle:60,1'); // optional biar tidak dibanjiri request
