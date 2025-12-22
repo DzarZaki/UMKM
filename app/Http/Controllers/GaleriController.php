@@ -33,7 +33,7 @@ class GaleriController extends Controller
         $request->validate([
             'judul'       => 'required|max:255',
             'kategori'    => 'required|in:prewedding,wedding,wisuda,lamaran,featured',
-            'file_galeri' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'file_galeri' => 'required|image|mimes:jpg,jpeg,png|max:7168',
         ]);
 
         /**
@@ -98,7 +98,7 @@ class GaleriController extends Controller
         $request->validate([
             'judul'       => 'required|max:255',
             'kategori'    => 'required|in:prewedding,wedding,wisuda,lamaran,featured',
-            'file_galeri' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'file_galeri' => 'nullable|image|mimes:jpg,jpeg,png|max:7168',
         ]);
 
         /**
