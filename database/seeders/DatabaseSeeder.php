@@ -98,7 +98,12 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        if (app()->environment('local')) {
+    $this->call(ReservasiSeeder::class);
+    $this->call(FotograferSeeder::class);
+}
+
         
-        $this->call(FotograferSeeder::class);
     }
 }
