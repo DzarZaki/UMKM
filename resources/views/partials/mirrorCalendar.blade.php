@@ -24,17 +24,25 @@
 
     const calendar = new FullCalendar.Calendar(el, {
       headerToolbar: {
-        left: 'prev,next today',
+        left: 'prev,today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek'
+        right: 'next'
       },
-      initialView: 'timeGridWeek',
+      initialView: 'dayGridMonth',
       nowIndicator: true,
-      allDaySlot: false,
-      slotMinTime: '07:00:00',
-      slotMaxTime: '21:00:00',
-
-      events: "{{ route('booking.kalender.events') }}",
+      // events: {
+      // url: 'booking/kalender/events',
+      // extraParams: function () {
+      //   return {
+      //     status: document.getElementById('filter_status')?.value || '',
+      //     // kalau kamu mau include new via toggle:
+      //     // include_new: document.getElementById('include_new')?.checked ? 1 : 0,
+      //   };
+      // }},
+      events: {
+      url: "{{ route('booking.kalender.events') }}", // ✅ ini yang bener
+      method: 'GET',
+    },
 
       // VIEW ONLY
       editable: false,

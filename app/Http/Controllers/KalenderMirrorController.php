@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use App\Models\Kalender;
+use App\Models\Reservasi;
 use Illuminate\Http\Request;
 
 class KalenderMirrorController extends Controller
@@ -14,15 +12,14 @@ class KalenderMirrorController extends Controller
 
     public function events(Request $request)
     {
-        // FullCalendar biasanya kirim start & end (ISO string)
-        $start = $request->query('start'); // contoh: 2025-12-21T00:00:00Z
+        $start = $request->query('start');
         $end   = $request->query('end');
 
-        $q = Kalender::query()
-            ->select(['id', 'tanggal', 'waktu_mulai', 'waktu_selesai'])
-            ->whereDate('tanggal', '>=', now()->toDateString()); // hanya dari hari ini ke depan
+        $q = Reservasi::query()
+            ->select(['id', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'status'])
+            ->whereDate('tanggal', '>=', now()->toDateString())
+            ->whereIn('status', ['pending','in_progress','done']); // ✅ jangan tampilkan new
 
-        // Filter range biar tidak load semua data
         if ($start && $end) {
             $q->whereBetween('tanggal', [
                 substr($start, 0, 10),
@@ -34,12 +31,11 @@ class KalenderMirrorController extends Controller
             ->orderBy('waktu_mulai')
             ->get();
 
-        // PENTING: untuk klien, JANGAN kirim nama/email/no_hp
-        $events = $items->map(fn ($k) => [
-            'id'    => $k->id,
+        $events = $items->map(fn ($r) => [
+            'id'    => (string) $r->id,
             'title' => 'Booked',
-            'start' => $k->tanggal . 'T' . $k->waktu_mulai,
-            'end'   => $k->tanggal . 'T' . $k->waktu_selesai,
+            'start' => $r->tanggal . 'T' . $r->waktu_mulai,
+            'end'   => $r->tanggal . 'T' . $r->waktu_selesai,
         ]);
 
         return response()->json($events);

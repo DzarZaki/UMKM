@@ -32,10 +32,10 @@
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          right: 'dayGridMonth,'
         },
 
-        initialView: 'timeGridWeek',
+        initialView: 'dayGridMonth',
         nowIndicator: true,
 
         // Biar fokus ke jam (karena kamu punya waktu_mulai & waktu_selesai)
