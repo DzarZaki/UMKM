@@ -97,6 +97,46 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     return view('dashboard', compact('reservasi_list', 'fotografer', 'status', 'stats'));
     })->name('dashboard');
 
+    /*
+|--------------------------------------------------------------------------
+| FOTOGRAFER / NON ADMIN DASHBOARD
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'checkRole:fotografer,videografer,fotografer_videografer'])
+->group(function () {
+
+    Route::get('/dashboard-fotografer', function (Request $request) {
+
+        $user = auth()->user();
+
+        // ambil id fotografer (samakan dengan struktur DB kamu)
+        $idFotografer = $user->id;
+
+        // LIST RESERVASI KHUSUS FOTOGRAFER LOGIN
+        $reservasi_list = Reservasi::where('id_fotografer', $idFotografer)
+            ->latest()
+            ->limit(30)
+            ->get();
+
+        // STATISTIK → KOMEN DULU
+        $stats = [
+            // 'new' => 0,
+            // 'pending' => 0,
+            // 'in_progress' => 0,
+            // 'done' => 0,
+        ];
+
+        // dropdown fotografer DISEMBUNYIKAN
+        $fotografer = collect(); // kosong
+
+        return view('dashboard', compact(
+            'reservasi_list',
+            'fotografer',
+            'stats'
+        ));
+    })->name('dashboard.fotografer');
+
+});
 
 
     /*
