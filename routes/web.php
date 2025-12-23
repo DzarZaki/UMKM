@@ -1,7 +1,9 @@
 <?php
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\Fotografer;
+use App\Models\{
+    Fotografer,
+    Reservasi};
 use App\Http\Controllers\{
     LoginController,
     GaleriController,
@@ -67,10 +69,26 @@ Route::post('/logout', [LoginController::class, 'logout'])
 Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        $fotografer = Fotografer::orderBy('nama_fotografer')->get();
-    return view('dashboard', compact('fotografer'));
+    Route::get('/dashboard', function (Request $request) {
+    $status = $request->query('status'); // filter dari dropdown
+
+    $reservasiQuery = Reservasi::query()->latest();
+
+    if ($status) {
+        $reservasiQuery->where('status', $status);
+    } else {
+        // default: jangan tampilkan yang new (opsional)
+        $reservasiQuery->where('status', '!=', 'new');
+    }
+
+    $reservasi_list = $reservasiQuery->limit(10)->get();
+
+    // buat dropdown fotografer di modal kalender
+    $fotografer = Fotografer::orderBy('nama_fotografer')->get();
+
+    return view('dashboard', compact('reservasi_list', 'fotografer', 'status'));
     })->name('dashboard');
+
 
     /*
     |--------------------------------------------------------------------------

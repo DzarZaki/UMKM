@@ -99,6 +99,119 @@
       </div>
     </div>
   </div>
+
+  <!-- KANAN: List Reservasi -->
+<div class="col-lg-4 mb-4">
+  <div class="card shadow-sm border-0 h-100">
+    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+      <div>
+        <h6 class="m-0 font-weight-bold text-primary">Reservasi</h6>
+        <small class="text-muted">Terbaru (max 10)</small>
+      </div>
+
+      <a href="{{ route('reservasi.index') }}" class="btn btn-sm btn-outline-primary">
+        Lihat semua
+      </a>
+    </div>
+
+    <div class="card-body pt-3 pb-2">
+
+      <!-- Filter -->
+      <form method="GET" action="{{ route('dashboard') }}" class="mb-3">
+        <div class="input-group input-group-sm">
+          <div class="input-group-prepend">
+            <span class="input-group-text bg-light">Status</span>
+          </div>
+          <select name="status" id="filter_status" class="form-control" onchange="this.form.submit()">
+            <option value="">Semua</option>
+            <option value="new" {{ request('status')==='new' ? 'selected' : '' }}>New</option>
+            <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Pending</option>
+            <option value="in_progress" {{ request('status')==='in_progress' ? 'selected' : '' }}>In Progress</option>
+            <option value="done" {{ request('status')==='done' ? 'selected' : '' }}>Done</option>
+          </select>
+        </div>
+
+        @if(request('status'))
+          <div class="mt-1">
+            <a href="{{ route('dashboard') }}" class="small">Reset</a>
+          </div>
+        @endif
+      </form>
+
+      <!-- List -->
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>Nama</th>
+              <th>Status</th>
+              <th class="text-center" width="46">Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($reservasi_list as $r)
+              @php
+                $badge = match($r->status) {
+                  'new' => 'light',
+                  'pending' => 'secondary',
+                  'in_progress' => 'warning',
+                  'done' => 'success',
+                  default => 'secondary'
+                };
+                $label = ucfirst(str_replace('_',' ', $r->status));
+              @endphp
+
+              <tr>
+                <td class="align-middle">
+                  <div class="font-weight-bold text-dark">{{ $r->nama }}</div>
+                  <div class="small text-muted">{{ $r->no_hp }}</div>
+                </td>
+
+                <td class="align-middle">
+                  <span class="badge badge-{{ $badge }}">{{ $label }}</span>
+                  <div class="small text-muted mt-1">
+                    {{ \Carbon\Carbon::parse($r->tanggal)->format('d M') }},
+                    {{ substr($r->waktu_mulai,0,5) }}-{{ substr($r->waktu_selesai,0,5) }}
+                  </div>
+                </td>
+
+                <td class="text-center align-middle">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary btnViewDetail"
+                    title="Lihat detail"
+                    data-id="{{ $r->id }}"
+                    data-nama="{{ e($r->nama) }}"
+                    data-no_hp="{{ e($r->no_hp) }}"
+                    data-email="{{ e($r->email) }}"
+                    data-tipe_paket="{{ e($r->tipe_paket ?? '') }}"
+                    data-status="{{ $r->status }}"
+                    data-id_fotografer="{{ $r->id_fotografer ?? '' }}"
+                    data-keterangan="{{ e($r->keterangan ?? '') }}"
+                    data-waktu_mulai="{{ substr($r->waktu_mulai,0,5) }}"
+                    data-waktu_selesai="{{ substr($r->waktu_selesai,0,5) }}"
+                    data-tanggal="{{ $r->tanggal }}"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="3" class="text-center text-muted py-4">
+                  Belum ada reservasi
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
   <!-- Content Column -->
   <div class="col-lg-8 mb-4">
     <!-- Project Card Example -->
@@ -359,7 +472,16 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
 
-    events: '/calendar/events',
+    // events: '/calendar/events',
+    events: {
+    url: '/calendar/events',
+    extraParams: function () {
+      return {
+        status: document.getElementById('filter_status')?.value || '',
+        // kalau kamu mau include new via toggle:
+        // include_new: document.getElementById('include_new')?.checked ? 1 : 0,
+      };
+    }},
 
     // CREATE (select slot) BUAT RESERVASI PAKE KLIK
     // select(info) {
@@ -441,6 +563,14 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   calendar.render();
+
+  const statusDropdown = document.getElementById('filter_status');
+  if (statusDropdown) {
+    statusDropdown.addEventListener('change', function () {
+      calendar.refetchEvents();
+    });
+  }
+
 
   // ====== API calls ======
   async function updateEventTime(event) {
@@ -568,6 +698,65 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   };
 });
+
+// ====== Detail view dari list reservasi (di samping kalender) ======
+document.addEventListener('DOMContentLoaded', function () {
+  // ambil elemen modal yang sudah ada
+  const id_reservasi = document.getElementById('id_reservasi');
+  const nama = document.getElementById('nama_klien');
+  const nomor_hp = document.getElementById('nomor_hp');
+  const email = document.getElementById('email');
+  const tipe_paket = document.getElementById('tipe_paket');
+  const statusEl = document.getElementById('status');
+  const fotograferEl = document.getElementById('fotografer');
+  const keterangan = document.getElementById('keterangan');
+  const start_time = document.getElementById('start_time');
+  const end_time = document.getElementById('end_time');
+
+  const saveBtn = document.getElementById('saveBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+
+  function showModal() { $('#eventModal').modal('show'); }
+
+  function setReadOnly(isReadOnly) {
+    [nama, nomor_hp, email, tipe_paket, statusEl, fotograferEl, keterangan, start_time, end_time]
+      .filter(Boolean)
+      .forEach(el => el.disabled = isReadOnly);
+
+    // detail mode: sembunyikan tombol simpan/hapus
+    if (saveBtn) saveBtn.classList.toggle('d-none', isReadOnly);
+    if (deleteBtn) deleteBtn.classList.add('d-none');
+  }
+
+  // klik tombol mata
+  document.querySelectorAll('.btnViewDetail').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setReadOnly(true);
+
+      id_reservasi.value = btn.dataset.id || '';
+      nama.value = btn.dataset.nama || '';
+      nomor_hp.value = btn.dataset.no_hp || '';
+      email.value = btn.dataset.email || '';
+      if (tipe_paket) tipe_paket.value = btn.dataset.tipe_paket || '';
+      if (statusEl) statusEl.value = btn.dataset.status || 'pending';
+      if (fotograferEl) fotograferEl.value = btn.dataset.id_fotografer || '';
+      if (keterangan) keterangan.value = btn.dataset.keterangan || '';
+
+      // time inputs butuh HH:MM
+      if (start_time) start_time.value = btn.dataset.waktu_mulai || '';
+      if (end_time) end_time.value = btn.dataset.waktu_selesai || '';
+
+      showModal();
+    });
+  });
+
+  // saat modal ditutup, balikin editable lagi (biar fitur create/edit modal tetap normal)
+  $('#eventModal').on('hidden.bs.modal', function () {
+    setReadOnly(false);
+  });
+});
+
+
 </script>
 
 @endpush
