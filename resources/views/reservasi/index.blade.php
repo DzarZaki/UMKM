@@ -1,108 +1,415 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<h1 class="h3 mb-4 text-gray-800">Booking</h1>
+<h1 class="h3 mb-4 text-gray-800">Reservasi</h1>
 
-{{-- Tombol Tambah Reservasi --}}
-<a href="{{ route('reservasi.create') }}"
-   class="btn btn-primary mb-3">
-    + Tambah Booking
-</a>
-
-{{-- Pesan sukses --}}
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
+{{-- FILTER --}}
+<form method="GET" class="mb-3">
+  <div class="form-row">
+    <div class="col-md-3 mb-2">
+      <select name="status" class="form-control">
+        <option value="">-- Semua Status --</option>
+        @foreach(['new','pending','in_progress','done'] as $st)
+          <option value="{{ $st }}" {{ request('status')===$st ? 'selected' : '' }}>
+            {{ ucfirst(str_replace('_',' ', $st)) }}
+          </option>
+        @endforeach
+      </select>
     </div>
+
+    <div class="col-md-3 mb-2">
+      <select name="tipe_paket" class="form-control">
+        <option value="">-- Semua Paket --</option>
+        @foreach($paketOptions as $p)
+          <option value="{{ $p }}" {{ request('tipe_paket')===$p ? 'selected' : '' }}>
+            {{ $p }}
+          </option>
+        @endforeach
+      </select>
+    </div>
+
+    <div class="col-md-4 mb-2">
+      <input type="text" name="q" class="form-control"
+             placeholder="Cari nama / email / no hp"
+             value="{{ request('q') }}">
+    </div>
+
+    <div class="col-md-2 mb-2">
+      <button class="btn btn-primary btn-block">Filter</button>
+    </div>
+  </div>
+
+  @if(request()->hasAny(['status','tipe_paket','q']))
+    <a href="{{ route('reservasi.index') }}" class="btn btn-link p-0">Reset</a>
+  @endif
+</form>
+
+{{-- Tombol Tambah (MODAL) --}}
+<button type="button" class="btn btn-success mb-3" id="btnTambah">
+  + Tambah Reservasi
+</button>
+
+@if(session('success'))
+  <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
 <div class="card shadow">
-    <div class="card-body">
+  <div class="card-body">
+    <table class="table table-bordered table-striped">
+      <thead class="bg-light">
+        <tr>
+          <th width="50">No</th>
+          <th>Nama</th>
+          <th>Email</th>
+          <th>No HP</th>
+          <th>Tipe Paket</th>
+          <th>Tanggal</th>
+          <th>Waktu</th>
+          <th>Status</th>
+          <th width="160">Aksi</th>
+        </tr>
+      </thead>
 
-        <table class="table table-bordered table-striped">
-            <thead class="bg-light">
-                <tr>
-                    <th width="50">No</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>No HP</th>
-                    <th>Tipe Paket</th>
-                    <th>Tanggal</th>
-                    <th>Waktu</th>
-                    <th>Status</th>
-                    <th width="160">Aksi</th>
-                </tr>
-            </thead>
-
-            <tbody>
-@forelse($reservasi as $item)
-<tr>
-    <td>{{ $loop->iteration }}</td>
-
-    <td>{{ $item->nama }}</td>
-
-    <td>{{ $item->email }}</td>
-
-    <td>{{ $item->no_hp }}</td>
-
-    <td>{{ $item->tipe_paket ?? '-' }}</td>
-
-    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-
-    {{-- WAKTU --}}
-    <td>
-        <small class="text-muted">
-            {{ $item->waktu_mulai }} - {{ $item->waktu_selesai }}
-        </small>
-    </td>
-
-    {{-- STATUS --}}
-    <td>
+      <tbody>
+      @forelse($reservasi as $item)
         @php
-            $badge = match($item->status) {
-                'pending' => 'secondary',
-                'in_progress' => 'warning',
-                'done' => 'success',
-                default => 'secondary'
-            };
+          $badge = match($item->status) {
+            'new' => 'info',
+            'pending' => 'secondary',
+            'in_progress' => 'warning',
+            'done' => 'success',
+            default => 'secondary'
+          };
         @endphp
 
-        <span class="badge bg-light text-dark border">
-            {{ str_replace('_', ' ', ucfirst($item->status)) }}
-        </span>
+        <tr
+          data-id="{{ $item->id }}"
+          data-nama="{{ e($item->nama) }}"
+          data-email="{{ e($item->email) }}"
+          data-no_hp="{{ e($item->no_hp) }}"
+          data-tipe_paket="{{ e($item->tipe_paket ?? '') }}"
+          data-tanggal="{{ $item->tanggal }}"
+          data-waktu_mulai="{{ substr($item->waktu_mulai,0,5) }}"
+          data-waktu_selesai="{{ substr($item->waktu_selesai,0,5) }}"
+          data-keterangan="{{ e($item->keterangan ?? '') }}"
+          data-status="{{ $item->status }}"
+          data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
+          data-id_kalender="{{ $item->id_kalender ?? '' }}"
+        >
+          <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
+          <td>{{ $item->nama }}</td>
+          <td>{{ $item->email }}</td>
+          <td>{{ $item->no_hp }}</td>
+          <td>{{ $item->tipe_paket ?? '-' }}</td>
+          <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+          <td>
+  <small class="text-muted">
+    {{ substr($item->waktu_mulai, 0, 5) }} - {{ substr($item->waktu_selesai, 0, 5) }}
+  </small>
+</td>
 
-    </td>
+          <td>
+            <span class="badge badge-{{ $badge }}">
+              {{ ucfirst(str_replace('_',' ', $item->status)) }}
+            </span>
+          </td>
+          <td>
+            <button type="button" class="btn btn-sm btn-warning mb-1 btnEdit">Edit</button>
+            <button type="button" class="btn btn-sm btn-danger btnHapus">Hapus</button>
+          </td>
+        </tr>
+      @empty
+        <tr>
+          <td colspan="9" class="text-center text-muted">Belum ada data reservasi</td>
+        </tr>
+      @endforelse
+      </tbody>
+    </table>
 
-    {{-- AKSI --}}
-    <td>
-        <a href="{{ route('reservasi.edit', $item->id) }}"
-           class="btn btn-sm btn-warning mb-1">
-            Edit
-        </a>
+    {{-- pagination --}}
+    {{ $reservasi->links() }}
+  </div>
+</div>
 
-        <form action="{{ route('reservasi.destroy', $item->id) }}"
-              method="POST"
-              class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button onclick="return confirm('Hapus data reservasi?')"
-                    class="btn btn-sm btn-danger">
-                Hapus
-            </button>
-        </form>
-    </td>
-</tr>
-@empty
-<tr>
-    <td colspan="9" class="text-center text-muted">
-        Belum ada data reservasi
-    </td>
-</tr>
-@endforelse
-</tbody>
+{{-- MODAL CRUD --}}
+<div class="modal fade" id="reservasiModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
 
-        </table>
+      <div class="modal-header py-2">
+        <h5 class="modal-title mb-0" id="modalTitle">Reservasi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body pt-3 pb-2">
+        <input type="hidden" id="id_reservasi">
+
+        <div class="row">
+          <!-- KIRI -->
+          <div class="col-md-6">
+            <div class="form-group mb-2">
+              <label class="mb-1">Nama</label>
+              <input type="text" id="nama" class="form-control">
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">Email</label>
+              <input type="email" id="email" class="form-control">
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">No HP</label>
+              <input type="text" id="no_hp" class="form-control">
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">Tipe Paket (opsional)</label>
+              <input type="text" id="tipe_paket" class="form-control">
+            </div>
+
+            <div class="form-group mb-0">
+              <label class="mb-1">Keterangan (opsional)</label>
+              <textarea id="keterangan" class="form-control" rows="5"></textarea>
+            </div>
+          </div>
+
+          <!-- KANAN -->
+          <div class="col-md-6">
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="mb-1">Tanggal</label>
+                <input type="date" id="tanggal" class="form-control">
+              </div>
+
+              <div class="form-group col-md-6 mb-2">
+                <label class="mb-1">Status</label>
+                <select id="status" class="form-control">
+                  <option value="new">New</option>
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="mb-1">Waktu Mulai</label>
+                <input type="time" id="waktu_mulai" class="form-control">
+              </div>
+
+              <div class="form-group col-md-6 mb-2">
+                <label class="mb-1">Waktu Selesai</label>
+                <input type="time" id="waktu_selesai" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">Fotografer</label>
+              <select id="id_fotografer" class="form-control">
+                <option value="">-- pilih fotografer --</option>
+                @foreach($fotografer as $f)
+                  <option value="{{ $f->id }}">
+                    {{ $f->nama_fotografer }}{{ $f->spesialisasi ? ' - '.$f->spesialisasi : '' }}
+                  </option>
+                @endforeach
+              </select>
+            </div>
+
+            <div class="form-group mb-0">
+              <label class="mb-1">Kalender (opsional)</label>
+              <select id="id_kalender" class="form-control">
+                <option value="">-- pilih kalender --</option>
+                @foreach($kalender as $k)
+                  <option value="{{ $k->id }}">
+                    {{ $k->tanggal }} ({{ $k->waktu_mulai }}-{{ $k->waktu_selesai }})
+                  </option>
+                @endforeach
+              </select>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer py-2">
+        <!-- <button type="button" class="btn btn-danger d-none" id="btnDeleteModal">Hapus</button> -->
+        <button type="button" class="btn btn-primary" id="btnSaveModal">Simpan</button>
+      </div>
 
     </div>
+  </div>
 </div>
+
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const csrf = '{{ csrf_token() }}';
+
+  const modal = $('#reservasiModal');
+  const btnTambah = document.getElementById('btnTambah');
+  const btnSave = document.getElementById('btnSaveModal');
+//   const btnDelete = document.getElementById('btnDeleteModal');
+
+  const id_reservasi = document.getElementById('id_reservasi');
+  const nama = document.getElementById('nama');
+  const email = document.getElementById('email');
+  const no_hp = document.getElementById('no_hp');
+  const tipe_paket = document.getElementById('tipe_paket');
+  const tanggal = document.getElementById('tanggal');
+  const waktu_mulai = document.getElementById('waktu_mulai');
+  const waktu_selesai = document.getElementById('waktu_selesai');
+  const keterangan = document.getElementById('keterangan');
+  const statusEl = document.getElementById('status');
+  const id_fotografer = document.getElementById('id_fotografer');
+  const id_kalender = document.getElementById('id_kalender');
+
+  function openCreate() {
+    id_reservasi.value = '';
+    nama.value = '';
+    email.value = '';
+    no_hp.value = '';
+    tipe_paket.value = '';
+    tanggal.value = '';
+    waktu_mulai.value = '';
+    waktu_selesai.value = '';
+    keterangan.value = '';
+    statusEl.value = 'pending'; // admin create default pending
+    id_fotografer.value = '';
+    id_kalender.value = '';
+    // btnDelete.classList.add('d-none');
+    modal.modal('show');
+  }
+
+  function openEdit(tr) {
+    id_reservasi.value = tr.dataset.id;
+    nama.value = tr.dataset.nama || '';
+    email.value = tr.dataset.email || '';
+    no_hp.value = tr.dataset.no_hp || '';
+    tipe_paket.value = tr.dataset.tipe_paket || '';
+    tanggal.value = tr.dataset.tanggal || '';
+    waktu_mulai.value = tr.dataset.waktu_mulai || '';
+    waktu_selesai.value = tr.dataset.waktu_selesai || '';
+    keterangan.value = tr.dataset.keterangan || '';
+    statusEl.value = tr.dataset.status || 'pending';
+    id_fotografer.value = tr.dataset.id_fotografer || '';
+    id_kalender.value = tr.dataset.id_kalender || '';
+    // btnDelete.classList.remove('d-none');
+    modal.modal('show');
+  }
+
+  btnTambah.addEventListener('click', openCreate);
+
+  document.querySelectorAll('.btnEdit').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tr = this.closest('tr');
+      openEdit(tr);
+    });
+  });
+
+  document.querySelectorAll('.btnHapus').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const tr = this.closest('tr');
+      if (!confirm('Hapus data reservasi?')) return;
+
+      const res = await fetch('/reservasi/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrf,
+          'Accept': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ id: tr.dataset.id })
+      });
+
+      if (!res.ok) {
+        alert('Gagal hapus. Cek console/network.');
+        console.log(await res.text());
+        return;
+      }
+
+      location.reload();
+    });
+  });
+
+  btnSave.addEventListener('click', async function() {
+    if (!nama.value.trim()) return alert('Nama wajib diisi');
+    if (!tanggal.value) return alert('Tanggal wajib diisi');
+    if (!waktu_mulai.value || !waktu_selesai.value || waktu_mulai.value >= waktu_selesai.value) return alert('Jam tidak valid');
+
+    const isUpdate = !!id_reservasi.value;
+
+    const payload = {
+      id: isUpdate ? Number(id_reservasi.value) : null,
+      id_fotografer: id_fotografer.value ? Number(id_fotografer.value) : null,
+      id_kalender: id_kalender.value ? Number(id_kalender.value) : null,
+
+      nama: nama.value,
+      email: email.value,
+      no_hp: no_hp.value,
+      tipe_paket: tipe_paket.value || null,
+
+      tanggal: tanggal.value,
+      waktu_mulai: waktu_mulai.value + ':00',
+      waktu_selesai: waktu_selesai.value + ':00',
+
+      keterangan: keterangan.value || null,
+      status: statusEl.value,
+    };
+
+    const url = isUpdate ? '/reservasi/update' : '/reservasi/store';
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrf,
+        'Accept': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      alert('Gagal simpan. Cek console/network.');
+      console.log(await res.text());
+      return;
+    }
+
+    modal.modal('hide');
+    location.reload();
+  });
+
+//   btnDelete.addEventListener('click', async function() {
+//     const id = id_reservasi.value;
+//     if (!id) return;
+//     if (!confirm('Hapus data reservasi?')) return;
+
+//     const res = await fetch('/reservasi/delete', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'X-CSRF-TOKEN': csrf,
+//         'Accept': 'application/json',
+//       },
+//       credentials: 'same-origin',
+//       body: JSON.stringify({ id: Number(id) })
+//     });
+
+//     if (!res.ok) {
+//       alert('Gagal hapus. Cek console/network.');
+//       console.log(await res.text());
+//       return;
+//     }
+
+//     modal.modal('hide');
+//     location.reload();
+//   });
+});
+</script>
+@endpush

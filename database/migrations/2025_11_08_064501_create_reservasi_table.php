@@ -36,8 +36,8 @@ return new class extends Migration
 
     $table->text('keterangan')->nullable();
 
-    $table->enum('status', ['pending','in_progress','done'])
-          ->default('pending');
+    $table->enum('status', ['new','pending','in_progress','done'])
+          ->default('new');
 
     $table->timestamps();
 });

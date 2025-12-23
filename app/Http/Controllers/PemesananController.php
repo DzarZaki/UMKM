@@ -27,6 +27,10 @@ class PemesananController extends Controller
             'keterangan'    => 'nullable|string',
         ]);
 
+         // normalisasi waktu agar jadi H:i:s (time column enak konsisten)
+        $mulai = strlen($request->waktu_mulai) === 5 ? $request->waktu_mulai . ':00' : $request->waktu_mulai;
+        $selesai = strlen($request->waktu_selesai) === 5 ? $request->waktu_selesai . ':00' : $request->waktu_selesai;
+
         Reservasi::create([
             'nama'        => $request->nama,
             'email'       => $request->email,
@@ -36,10 +40,11 @@ class PemesananController extends Controller
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
             'keterangan'  => $request->keterangan,
-            'status'      => 'pending',
+            'id_fotografer' => null,
+            'status'      => 'new',
         ]);
 
 
-        return back()->with('success', 'Booking berhasil dikirim');
+        return back()->with('success', 'Booking berhasil dikirim. <br> Admin Kami akan menghubungi Anda melalui email atau nomor HP yang diberikan.');
     }
 }

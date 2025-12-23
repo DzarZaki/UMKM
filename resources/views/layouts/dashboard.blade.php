@@ -16,7 +16,7 @@
     <!-- <link href="{{ asset('css/galeri-admin.css') }}" rel="stylesheet"> -->
 
     <!-- FullCalendar (BENAR) -->
-    <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/main.min.css">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/index.global.min.css"> -->
     <script src="https://unpkg.com/fullcalendar@6.1.11/index.global.min.js"></script>
 
 </head>

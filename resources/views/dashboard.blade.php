@@ -164,82 +164,132 @@
   <!-- /.container-fluid -->
 </div>
 <!-- == MODAL == -->
-<div class="modal fade" id="eventModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Reservasi</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <input type="hidden" id="id_kalender">
-            <div class="mb-2">
-              <label>Nama Klien</label>
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header py-2">
+        <h5 class="modal-title mb-0">Reservasi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body pt-3 pb-2">
+        <input type="hidden" id="id_reservasi">
+
+        <div class="row">
+          <!-- KIRI -->
+          <div class="col-md-6">
+            <div class="form-group mb-2">
+              <label class="mb-1">Nama</label>
               <input type="text" id="nama_klien" class="form-control">
             </div>
-            <div class="mb-2">
-              <label>No HP</label>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">No HP</label>
               <input type="text" id="nomor_hp" class="form-control">
             </div>
-            <div class="mb-2">
-              <label>Email</label>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">Email</label>
               <input type="email" id="email" class="form-control">
             </div>
-            <div class="row mb-2">
-              <div class="col">
-                <label>Jam Mulai</label>
-                <input type="time" id="start_time" class="form-control">
-              </div>
-              <div class="col">
-                <label>Jam Selesai</label>
-                <input type="time" id="end_time" class="form-control">
-              </div>
+
+            <div class="form-group mb-2">
+              <label class="mb-1">Tipe Paket</label>
+              <input type="text" id="tipe_paket" class="form-control">
+            </div>
+
+            <div class="form-group mb-0">
+              <label class="mb-1">Keterangan (opsional)</label>
+              <textarea id="keterangan" class="form-control" rows="5"></textarea>
             </div>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-danger d-none" id="deleteBtn">Hapus</button>
-            <button class="btn btn-primary" id="saveBtn">Simpan</button>
+
+          <!-- KANAN -->
+          <div class="col-md-6">
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="mb-1">Status</label>
+                <select id="status" class="form-control">
+                  <option value="new">New</option>
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+
+              <div class="form-group col-md-6 mb-2">
+                <label class="mb-1">Fotografer</label>
+                <select id="fotografer" class="form-control">
+                  <option value="">-- pilih fotografer --</option>
+                  @foreach($fotografer as $f)
+                    <option value="{{ $f->id }}">
+                      {{ $f->nama_fotografer }}{{ $f->spesialisasi ? ' - '.$f->spesialisasi : '' }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">
+                <label class="mb-1">Jam Mulai</label>
+                <input type="time" id="start_time" class="form-control" value="08:00">
+              </div>
+
+              <div class="form-group col-md-6 mb-0">
+                <label class="mb-1">Jam Selesai</label>
+                <input type="time" id="end_time" class="form-control" value="09:00">
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
+
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-danger d-none" id="deleteBtn">Hapus</button>
+        <button type="button" class="btn btn-primary" id="saveBtn">Simpan</button>
+      </div>
+
     </div>
+  </div>
+</div>
+
+
 <!-- End of Main Content -->
 @endsection
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
   const calendarEl = document.getElementById('calendar');
   if (!calendarEl) return;
 
-  // ====== Modal helpers (SB Admin 2 / Bootstrap 4) ======
+  // ====== Modal helpers (Bootstrap 4 + jQuery) ======
   function showModal() { $('#eventModal').modal('show'); }
   function hideModal() { $('#eventModal').modal('hide'); }
 
   // ====== Form elements ======
-  const id_kalender = document.getElementById('id_kalender');
-  const nama_klien  = document.getElementById('nama_klien');
-  const start_time  = document.getElementById('start_time');
-  const end_time    = document.getElementById('end_time');
-  const nomor_hp    = document.getElementById('nomor_hp');
-  const email       = document.getElementById('email');
-  const saveBtn     = document.getElementById('saveBtn');
-  const deleteBtn   = document.getElementById('deleteBtn');
+  const id_reservasi = document.getElementById('id_reservasi');
+  const nama         = document.getElementById('nama_klien');
+  const nomor_hp     = document.getElementById('nomor_hp');
+  const email        = document.getElementById('email');
+  const start_time   = document.getElementById('start_time');
+  const end_time     = document.getElementById('end_time');
+  const saveBtn      = document.getElementById('saveBtn');
+  const deleteBtn    = document.getElementById('deleteBtn');
+
+  // optional fields
+  const tipe_paket   = document.getElementById('tipe_paket');
+  const keterangan   = document.getElementById('keterangan');
+  const statusEl     = document.getElementById('status');
+  const fotograferEl = document.getElementById('fotografer');
 
   let selectedDate = null;
 
-  function clearForm() {
-    id_kalender.value = '';
-    nama_klien.value  = '';
-    nomor_hp.value    = '';
-    email.value       = '';
-    start_time.value  = '';
-    end_time.value    = '';
-    selectedDate      = null;
-    deleteBtn.classList.add('d-none');
-  }
-
-  // ====== Local date/time helpers (ANTI UTC) ======
+  // ====== helpers ======
   function pad(n){ return String(n).padStart(2,'0'); }
 
   function toLocalDateStr(d) {
@@ -250,31 +300,58 @@ document.addEventListener('DOMContentLoaded', function () {
     return `${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
   }
 
-  // startStr kadang sudah ISO-like, tapi aman ambil dari Date object:
   function infoStartDate(info) {
     return info.start instanceof Date ? toLocalDateStr(info.start) : info.startStr.substring(0,10);
   }
-      //debug CONSOLE
-  function logApi(label, payload, res, text) {
-  console.group(`[${label}]`);
-  console.log('payload:', payload);
-  console.log('status:', res.status, res.statusText);
-  try { console.log('response:', text ? JSON.parse(text) : text); }
-  catch { console.log('response:', text); }
-  console.groupEnd();
+
+  function clearForm() {
+    id_reservasi.value = '';
+    nama.value = '';
+    nomor_hp.value = '';
+    email.value = '';
+    start_time.value = '';
+    end_time.value = '';
+    selectedDate = null;
+
+    if (tipe_paket) tipe_paket.value = '';
+    if (keterangan) keterangan.value = '';
+    if (statusEl) statusEl.value = 'pending';
+    if (fotograferEl) fotograferEl.value = '';
+
+    deleteBtn.classList.add('d-none');
   }
+
+  function logApi(label, payload, res, text) {
+    console.group(`[${label}]`);
+    console.log('payload:', payload);
+    console.log('status:', res.status, res.statusText);
+    try { console.log('response:', text ? JSON.parse(text) : text); }
+    catch { console.log('response:', text); }
+    console.groupEnd();
+  }
+
+  function setReadOnly(isReadOnly) {
+  const fields = [nama, nomor_hp, email, start_time, end_time, tipe_paket, keterangan, statusEl, fotograferEl].filter(Boolean);
+  fields.forEach(el => el.disabled = isReadOnly);
+
+  // sembunyikan tombol action saat detail
+  saveBtn.classList.toggle('d-none', isReadOnly);
+  deleteBtn.classList.toggle('d-none', true); // detail: selalu hide delete
+}
+
 
   // ====== FullCalendar ======
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridWeek',
     timeZone: 'local',
-    height: 600,
-    contentHeight: 600,
     locale: 'id',
-    selectable: true,
-    editable: true,
+    selectable: false, // CREATE pake klik slot
+    editable: false, // DRAG/RESIZE
+    eventStartEditable: false, // extra aman (drag)
+    eventDurationEditable: true, // extra aman (resize)
     allDaySlot: false,
     themeSystem: 'bootstrap4',
+    height: 600,
 
     headerToolbar: {
       left: 'prev,next today',
@@ -282,105 +359,99 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
 
-    events: '/kalender/load',
+    events: '/calendar/events',
 
-    // CREATE
-    select(info) {
-      clearForm();
+    // CREATE (select slot) BUAT RESERVASI PAKE KLIK
+    // select(info) {
+    //   clearForm();
+    //   selectedDate = infoStartDate(info);
 
-      selectedDate = infoStartDate(info);
+    //   // pakai jam yang dipilih biar gak “geser”
+    //   start_time.value = `${pad(info.start.getHours())}:${pad(info.start.getMinutes())}`;
+    //   if (info.end) {
+    //     end_time.value = `${pad(info.end.getHours())}:${pad(info.end.getMinutes())}`;
+    //   } else {
+    //     end_time.value = `${pad((info.start.getHours()+1)%24)}:${pad(info.start.getMinutes())}`;
+    //   }
 
-      start_time.value = '08:00';
-      end_time.value   = '09:00';
+    //   showModal();
+    // },
 
-      showModal();
-    },
-
-    // EDIT
-    eventClick(info) {
+    eventClick(info) { //LIHAT DETAIL INFO, TIDAK BISA NYALA BERBARENGAN DENGAN EDIT
       const e = info.event;
 
-      id_kalender.value = e.id;
-      nama_klien.value  = e.title;
-      nomor_hp.value    = e.extendedProps.nomor_hp ?? '';
-      email.value       = e.extendedProps.email ?? '';
+      clearForm();              // optional, biar bersih
+      setReadOnly(true);        // mode detail
 
-      // pakai jam lokal (JANGAN toISOString)
+      // isi data
+      nama.value     = e.extendedProps.nama ?? '';
+      nomor_hp.value = e.extendedProps.no_hp ?? '';
+      email.value    = e.extendedProps.email ?? '';
+
+      if (tipe_paket) tipe_paket.value = e.extendedProps.tipe_paket ?? '';
+      if (keterangan) keterangan.value = e.extendedProps.keterangan ?? '';
+      if (statusEl) statusEl.value = e.extendedProps.status ?? '';
+      if (fotograferEl) fotograferEl.value = e.extendedProps.id_fotografer ?? '';
+
       start_time.value = `${pad(e.start.getHours())}:${pad(e.start.getMinutes())}`;
       end_time.value   = e.end ? `${pad(e.end.getHours())}:${pad(e.end.getMinutes())}` : '';
 
       selectedDate = toLocalDateStr(e.start);
 
-      deleteBtn.classList.remove('d-none');
       showModal();
     },
 
-    // DRAG
-    eventDrop: async function(info) {
-      try { await updateEventTime(info.event); }
-      catch (e) { info.revert(); alert('Gagal update (drag).'); }
-    },
 
-    // RESIZE
-    eventResize: async function(info) {
-      try { await updateEventTime(info.event); }
-      catch (e) { info.revert(); alert('Gagal update (resize).'); }
-    }
+    // EDIT (click existing event) EDIT RESERVASI PAKE KLIK
+    // eventClick(info) {
+    //   const e = info.event;
+
+    //   id_reservasi.value = e.id;
+
+    //   // ambil dari extendedProps (sesuai controller events)
+    //   nama.value     = e.extendedProps.nama ?? '';
+    //   nomor_hp.value = e.extendedProps.no_hp ?? '';
+    //   email.value    = e.extendedProps.email ?? '';
+
+    //   if (tipe_paket) tipe_paket.value = e.extendedProps.tipe_paket ?? '';
+    //   if (keterangan) keterangan.value = e.extendedProps.keterangan ?? '';
+    //   if (statusEl) statusEl.value = e.extendedProps.status ?? 'pending';
+    //   if (fotograferEl) fotograferEl.value = e.extendedProps.id_fotografer ?? '';
+
+    //   start_time.value = `${pad(e.start.getHours())}:${pad(e.start.getMinutes())}`;
+    //   end_time.value   = e.end ? `${pad(e.end.getHours())}:${pad(e.end.getMinutes())}` : '';
+
+    //   selectedDate = toLocalDateStr(e.start);
+
+    //   deleteBtn.classList.remove('d-none');
+    //   showModal();
+    // },
+
+    // DRAG KALENDER
+    // eventDrop: async function(info) {
+    //   try { await updateEventTime(info.event); }
+    //   catch (e) { info.revert(); alert('Gagal update (drag).'); }
+    // },
+
+    // RESIZE KALENDER
+    // eventResize: async function(info) {
+    //   try { await updateEventTime(info.event); }
+    //   catch (e) { info.revert(); alert('Gagal update (resize).'); }
+    // }
   });
 
   calendar.render();
 
   // ====== API calls ======
-async function updateEventTime(event) {
-  const payloadUpdate = {
-    id: event.id,
-    tanggal: toLocalDateStr(event.start),
-    waktu_mulai: toLocalTimeStr(event.start),
-    waktu_selesai: event.end ? toLocalTimeStr(event.end) : toLocalTimeStr(event.start),
-  };
+  async function updateEventTime(event) {
+    const payloadUpdate = {
+      id: event.id,
+      tanggal: toLocalDateStr(event.start),
+      waktu_mulai: toLocalTimeStr(event.start),
+      waktu_selesai: event.end ? toLocalTimeStr(event.end) : toLocalTimeStr(event.start),
+    };
 
-  const resUpdate = await fetch('/kalender/update', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': '{{ csrf_token() }}',
-      'Accept': 'application/json',
-    },
-    credentials: 'same-origin',
-    body: JSON.stringify(payloadUpdate)
-  });
-
-  const textUpdate = await resUpdate.text();
-  logApi('UPDATE', payloadUpdate, resUpdate, textUpdate);
-
-  if (!resUpdate.ok) throw new Error('update failed');
-}
-
-// SAVE (CREATE + UPDATE)
-saveBtn.onclick = async () => {
-  if (!selectedDate) { alert('Tanggal belum dipilih'); return; }
-  if (!start_time.value || !end_time.value || start_time.value >= end_time.value) {
-    alert('Jam tidak valid');
-    return;
-  }
-  if (!nama_klien.value.trim()) {
-    alert('Nama klien wajib diisi');
-    return;
-  }
-
-  const payloadStore = {
-    id_kalender: id_kalender.value || null,
-    user_id: 1, // nanti ganti auth()->id()
-    nama_klien: nama_klien.value,
-    nomor_hp: nomor_hp.value,
-    email: email.value,
-    tanggal: selectedDate,
-    waktu_mulai: start_time.value + ':00',
-    waktu_selesai: end_time.value + ':00',
-  };
-
-  try {
-    const resStore = await fetch('/kalender/store', {
+    const resUpdate = await fetch('/reservasi/update-time', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -388,66 +459,126 @@ saveBtn.onclick = async () => {
         'Accept': 'application/json',
       },
       credentials: 'same-origin',
-      body: JSON.stringify(payloadStore)
+      body: JSON.stringify(payloadUpdate)
     });
 
-    const textStore = await resStore.text();
-    logApi('STORE', payloadStore, resStore, textStore);
+    const textUpdate = await resUpdate.text();
+    logApi('UPDATE-TIME', payloadUpdate, resUpdate, textUpdate);
 
-    if (!resStore.ok) {
-      alert('Gagal simpan. Cek console.');
+    if (!resUpdate.ok) throw new Error('update-time failed');
+  }
+
+  // SAVE (CREATE + UPDATE)
+  saveBtn.onclick = async () => {
+    if (!selectedDate) { alert('Tanggal belum dipilih'); return; }
+    if (!start_time.value || !end_time.value || start_time.value >= end_time.value) {
+      alert('Jam tidak valid');
+      return;
+    }
+    if (!nama.value.trim()) {
+      alert('Nama wajib diisi');
       return;
     }
 
-    hideModal();
-    calendar.unselect();
-    calendar.refetchEvents();
+    const isUpdate = !!id_reservasi.value;
 
-  } catch (e) {
-    console.error('[STORE] exception:', e);
-    alert('STORE error. Cek console.');
-  }
-};
+    const payloadStore = {
+      id: isUpdate ? id_reservasi.value : null,
+      id_fotografer: fotograferEl ? (fotograferEl.value || null) : null,
 
-// DELETE
-deleteBtn.onclick = async () => {
-  const id = id_kalender.value;
-  if (!id) return;
-  if (!confirm('Hapus event ini?')) return;
+      nama: nama.value,
+      email: email.value,
+      no_hp: nomor_hp.value,
 
-  const payloadDelete = { id };
+      tipe_paket: tipe_paket ? (tipe_paket.value || null) : null,
+      tanggal: selectedDate,
+      waktu_mulai: start_time.value + ':00',
+      waktu_selesai: end_time.value + ':00',
 
-  try {
-    const resDelete = await fetch('/kalender/delete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-        'Accept': 'application/json',
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify(payloadDelete)
-    });
+      keterangan: keterangan ? (keterangan.value || null) : null,
+      status: statusEl ? statusEl.value : 'pending',
+    };
 
-    const textDelete = await resDelete.text();
-    logApi('DELETE', payloadDelete, resDelete, textDelete);
+    const url = isUpdate ? '/reservasi/update' : '/reservasi/store';
 
-    if (!resDelete.ok) {
-      alert('Gagal hapus. Cek console.');
-      return;
+    try {
+      const resStore = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(payloadStore)
+      });
+
+      const textStore = await resStore.text();
+      logApi(isUpdate ? 'UPDATE' : 'STORE', payloadStore, resStore, textStore);
+
+      if (!resStore.ok) {
+        alert('Gagal simpan. Lihat console/network.');
+        return;
+      }
+
+      hideModal();
+      calendar.unselect();
+      calendar.refetchEvents();
+
+    } catch (e) {
+      console.error('[STORE/UPDATE] exception:', e);
+      alert('STORE/UPDATE error. Cek console.');
     }
+  };
 
-    hideModal();
-    calendar.refetchEvents();
+  // DELETE
+  deleteBtn.onclick = async () => {
+    const id = id_reservasi.value;
+    if (!id) return;
+    if (!confirm('Hapus reservasi ini?')) return;
 
-  } catch (e) {
-    console.error('[DELETE] exception:', e);
-    alert('DELETE error. Cek console.');
-  }
-};
+    const payloadDelete = { id };
 
+    try {
+      const resDelete = await fetch('/reservasi/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(payloadDelete)
+      });
+
+      const textDelete = await resDelete.text();
+      logApi('DELETE', payloadDelete, resDelete, textDelete);
+
+      if (!resDelete.ok) {
+        alert('Gagal hapus. Lihat console/network.');
+        return;
+      }
+
+      hideModal();
+      calendar.refetchEvents();
+
+    } catch (e) {
+      console.error('[DELETE] exception:', e);
+      alert('DELETE error. Cek console.');
+    }
+  };
 });
 </script>
+
 @endpush
 
+<!-- <style>
+/* status */
+.status-new { background:#e2e6ea !important; border-color:#e2e6ea !important; color:#111 !important; }
+.status-pending { background:#f6c23e !important; border-color:#f6c23e !important; }
+.status-in_progress { background:#36b9cc !important; border-color:#36b9cc !important; }
+.status-done { background:#1cc88a !important; border-color:#1cc88a !important; }
 
+/* opsional: paket (kalau lo kirim class paket-xxx) */
+.paket-wedding { background:#4e73df !important; border-color:#4e73df !important; }
+</style> -->

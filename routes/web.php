@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Fotografer;
 use App\Http\Controllers\{
     LoginController,
     GaleriController,
@@ -10,7 +11,8 @@ use App\Http\Controllers\{
     HomeController,
     KalenderController,
     KalenderMirrorController,
-    PemesananController
+    PemesananController,
+    ReservasiKalenderController
 };
 
 /*
@@ -66,7 +68,8 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $fotografer = Fotografer::orderBy('nama_fotografer')->get();
+    return view('dashboard', compact('fotografer'));
     })->name('dashboard');
 
     /*
@@ -82,6 +85,13 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::resource('reservasi', ReservasiController::class);
+    Route::prefix('reservasi')->group(function () {
+        Route::post('/store', [ReservasiController::class, 'storeJson']);
+        Route::post('/update', [ReservasiController::class, 'updateJson']);
+        Route::post('/update-time', [ReservasiController::class, 'updateTime']);
+        Route::post('/delete', [ReservasiController::class, 'deleteJson']);
+    });
+
 
     /*
     |--------------------------------------------------------------------------
@@ -105,6 +115,10 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         Route::post('/update',[KalenderController::class, 'update']);
         Route::post('/delete',[KalenderController::class, 'destroy']);
     });
+
+    Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
+  ->name('calendar.events');
+
 
 });
 
