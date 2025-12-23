@@ -1,6 +1,30 @@
 @extends('layouts.dashboard')
 
 @section('content')
+<style>
+  /* area tabel yang scroll (bukan page) */
+  .reservasi-table-wrap{
+    max-height: calc(100vh - 350px); /* sesuaikan kalau header layout kamu lebih tinggi/rendah */
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  /* sticky header */
+  .reservasi-table-wrap thead th{
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #f8f9fc; /* mirip bg-light */
+    border-top: 0;
+  }
+
+  /* supaya sticky stabil di beberapa browser */
+  .reservasi-table-wrap table{
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+</style>
+
 <h1 class="h3 mb-4 text-gray-800">Reservasi</h1>
 
 {{-- FILTER --}}
@@ -54,21 +78,22 @@
 @endif
 
 <div class="card shadow">
-  <div class="card-body">
-    <table class="table table-bordered table-striped">
-      <thead class="bg-light">
-        <tr>
-          <th width="50">No</th>
-          <th>Nama</th>
-          <th>Email</th>
-          <th>No HP</th>
-          <th>Tipe Paket</th>
-          <th>Tanggal</th>
-          <th>Waktu</th>
-          <th>Status</th>
-          <th width="160">Aksi</th>
-        </tr>
-      </thead>
+  <div class="card-body p-0">
+    <div class="reservasi-table-wrap">
+      <table class="table table-bordered table-striped mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th width="50">No</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>No HP</th>
+            <th>Tipe Paket</th>
+            <th>Tanggal</th>
+            <th>Waktu</th>
+            <th>Status</th>
+            <th width="160">Aksi</th>
+          </tr>
+        </thead>
 
       <tbody>
       @forelse($reservasi as $item)
