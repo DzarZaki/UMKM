@@ -13,10 +13,10 @@ class ReservasiSeeder extends Seeder
         // Kalau mau reset data reservasi tiap seed (LOCAL only), uncomment:
         // Reservasi::truncate();
 
-        $baseDate = now()->startOfMonth();
+        $baseDate = now();
 
         $make = function (int $i, string $status) use ($baseDate) {
-            $tanggal = $baseDate->copy()->addDays($i % 20)->toDateString();
+            $tanggal = $baseDate->copy()->addDays($i % 5)->toDateString();
 
             $startHour = 8 + ($i % 6); // 08..13
             $waktuMulai = sprintf('%02d:00:00', $startHour);
