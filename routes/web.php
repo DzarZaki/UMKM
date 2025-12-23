@@ -81,12 +81,12 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
       $reservasiQuery->where('status', '!=', 'new'); // optional default
     }
 
-    $reservasi_list = $reservasiQuery->limit(10)->get();
+    $reservasi_list = $reservasiQuery->limit(30)->get(); // LIMIT QUERY DI DASHBOARD
 
     // DROPDOWN fotografer modal
     $fotografer = Fotografer::orderBy('nama_fotografer')->get();
 
-    // ✅ STATISTIK CARD (global)
+    
     $stats = [
       'new'         => Reservasi::where('status','new')->count(),
       'pending'     => Reservasi::where('status','pending')->count(),
