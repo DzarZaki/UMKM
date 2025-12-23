@@ -45,6 +45,10 @@ Route::get('/booking', [PemesananController::class, 'create'])
 Route::post('/booking', [PemesananController::class, 'store'])
     ->name('booking.store');
 
+Route::get('/booking/availability', [PemesananController::class, 'availability'])
+    ->name('booking.availability')
+    ->middleware('throttle:60,1');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH
