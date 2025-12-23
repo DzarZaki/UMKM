@@ -13,34 +13,32 @@ class LoginController extends Controller
     }
 
     public function authentication(Request $request)
-    {
-        $credentials = $request->validate([
-            'username' => 'required',
-            'password' => 'required'
-        ]);
+{
+    $credentials = $request->validate([
+        'username' => 'required',
+        'password' => 'required'
+    ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
 
-            if (Auth::user()->role == 'admin') {
-                return redirect()->intended('/dashboard');
-            }
+        $role = Auth::user()->role;
 
-            if (Auth::user()->role == 'fotografer') {
-                return redirect()->intended('/dashboard'); 
-            }
+        // ADMIN
+        if ($role === 'admin') {
+            return redirect()->intended(route('dashboard'));
         }
 
-        return back()->with('loginError', 'Username atau password salah!');
-    }
+        // FOTOGRAFER / VIDEOGRAFER
+        if (in_array($role, ['fotografer', 'videografer', 'fotografer_videografer'])) {
+            return redirect()->intended(route('dashboard.fotografer'));
+        }
 
-    public function logout(Request $request)
-    {
+        // fallback (harusnya gak kejadian)
         Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/login');
     }
+
+    return back()->with('loginError', 'Username atau password salah!');
+}
+
 }

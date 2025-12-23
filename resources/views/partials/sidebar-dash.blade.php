@@ -21,15 +21,15 @@
     <!-- DASHBOARD -->
     <!-- ===================== -->
     <li class="nav-item {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
-        @if(auth()->user()->role === 'admin')
-            <a class="nav-link" href="{{ route('dashboard') }}">
-        @else
-            <a class="nav-link" href="{{ route('dashboard.fotografer') }}">
-        @endif
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-    </li>
+    <a class="nav-link"
+       href="{{ auth()->user()->role === 'admin'
+            ? route('dashboard')
+            : route('dashboard.fotografer') }}">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+    </a>
+</li>
+
 
     <!-- Divider -->
     <hr class="sidebar-divider">
