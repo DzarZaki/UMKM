@@ -70,24 +70,33 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function (Request $request) {
-    $status = $request->query('status'); // filter dari dropdown
+    $status = $request->query('status');
 
+    // LIST KANAN
     $reservasiQuery = Reservasi::query()->latest();
 
     if ($status) {
-        $reservasiQuery->where('status', $status);
+      $reservasiQuery->where('status', $status);
     } else {
-        // default: jangan tampilkan yang new (opsional)
-        $reservasiQuery->where('status', '!=', 'new');
+      $reservasiQuery->where('status', '!=', 'new'); // optional default
     }
 
     $reservasi_list = $reservasiQuery->limit(10)->get();
 
-    // buat dropdown fotografer di modal kalender
+    // DROPDOWN fotografer modal
     $fotografer = Fotografer::orderBy('nama_fotografer')->get();
 
-    return view('dashboard', compact('reservasi_list', 'fotografer', 'status'));
+    // ✅ STATISTIK CARD (global)
+    $stats = [
+      'new'         => Reservasi::where('status','new')->count(),
+      'pending'     => Reservasi::where('status','pending')->count(),
+      'in_progress' => Reservasi::where('status','in_progress')->count(),
+      'done'        => Reservasi::where('status','done')->count(),
+    ];
+
+    return view('dashboard', compact('reservasi_list', 'fotografer', 'status', 'stats'));
     })->name('dashboard');
+
 
 
     /*

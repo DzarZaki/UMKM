@@ -74,9 +74,9 @@
       @forelse($reservasi as $item)
         @php
           $badge = match($item->status) {
-            'new' => 'info',
-            'pending' => 'secondary',
-            'in_progress' => 'warning',
+            'new' => 'secondary',
+            'pending' => 'warning',
+            'in_progress' => 'info',
             'done' => 'success',
             default => 'secondary'
           };
