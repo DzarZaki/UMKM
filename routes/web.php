@@ -120,6 +120,10 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     Route::get('/reservasi/export/excel', [ReservasiController::class, 'exportExcel'])
         ->name('reservasi.export.excel');
 
+    Route::resource('fotografer', \App\Http\Controllers\FotograferController::class)
+    ->except(['show','create','edit']);
+
+
 });
 
 /*

@@ -35,7 +35,7 @@ class User extends Authenticatable
 
     public function fotografer()
     {
-        return $this->hasMany(Fotografer::class);
+        return $this->hasOne(Fotografer::class);
     }
 
     public function kalender()

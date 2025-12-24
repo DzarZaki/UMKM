@@ -60,6 +60,17 @@
             </a>
         </li>
 
+        <!-- Nav Item - Fotografer (ADMIN ONLY) -->
+        @if(auth()->user()->role === 'admin')
+        <li class="nav-item {{ request()->routeIs('fotografer.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('fotografer.index') }}">
+                <i class="fas fa-users"></i>
+                <span>Fotografer</span>
+            </a>
+        </li>
+        @endif
+
+
         <!-- Tables -->
         <li class="nav-item">
             <a class="nav-link" href="#">
