@@ -73,6 +73,20 @@
   + Tambah Reservasi
 </button>
 
+{{-- TOMBOL EXPORT --}}
+<div class="mb-3 d-flex gap-2">
+  <a href="{{ route('reservasi.export.pdf', request()->query()) }}"
+     class="btn btn-danger btn-sm">
+    Export PDF
+  </a>
+
+  <a href="{{ route('reservasi.export.excel', request()->query()) }}"
+     class="btn btn-success btn-sm">
+    Export Excel
+  </a>
+</div>
+
+
 @if(session('success'))
   <div class="alert alert-success">{{ session('success') }}</div>
 @endif

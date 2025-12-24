@@ -112,6 +112,14 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 
     Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
         ->name('calendar.events');
+
+    // EXPORT
+    Route::get('/reservasi/export/pdf', [ReservasiController::class, 'exportPdf'])
+        ->name('reservasi.export.pdf');
+
+    Route::get('/reservasi/export/excel', [ReservasiController::class, 'exportExcel'])
+        ->name('reservasi.export.excel');
+
 });
 
 /*
