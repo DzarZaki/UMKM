@@ -24,4 +24,9 @@ class Reservasi extends Model
         'keterangan',
         'status',
     ];
+    public function fotografer()
+{
+    return $this->belongsTo(Fotografer::class, 'id_fotografer');
+}
+
 }

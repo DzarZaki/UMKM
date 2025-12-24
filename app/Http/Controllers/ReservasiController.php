@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ReservasiExport;
-
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 class ReservasiController extends Controller
@@ -95,7 +95,20 @@ class ReservasiController extends Controller
         'status'        => 'required|in:pending,in_progress,done',
     ]);
 
-    Reservasi::create($request->all());
+   Reservasi::create([
+    'id_fotografer' => $request->id_fotografer,
+    'id_kalender'   => $request->id_kalender,
+    'nama'          => $request->nama,
+    'email'         => $request->email,
+    'no_hp'         => $request->no_hp,
+    'tipe_paket'    => $request->tipe_paket,
+    'tanggal'       => $request->tanggal,
+    'waktu_mulai'   => $request->waktu_mulai,
+    'waktu_selesai' => $request->waktu_selesai,
+    'keterangan'    => $request->keterangan,
+    'status'        => $request->status ?? 'pending',
+]);
+
 
     return redirect()
         ->route('reservasi.index')
@@ -233,10 +246,12 @@ public function updateTime(Request $request)
 
     $reservasi = Reservasi::findOrFail($data['id']);
     $reservasi->update([
-        'tanggal' => $data['tanggal'],
-        'waktu_mulai' => $data['waktu_mulai'],
-        'waktu_selesai' => $data['waktu_selesai'],
-    ]);
+    'id_fotografer' => $data['id_fotografer'] ?? $reservasi->id_fotografer,
+    'tanggal'       => $data['tanggal'],
+    'waktu_mulai'   => $data['waktu_mulai'],
+    'waktu_selesai' => $data['waktu_selesai'],
+]);
+
 
     return response()->json(['ok' => true]);
 }
@@ -290,6 +305,53 @@ public function exportExcel(Request $request)
         'laporan-reservasi.xlsx'
     );
 }
+
+
+public function export()
+{
+    $filename = 'reservasi-' . now()->format('Y-m-d') . '.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function () {
+        $handle = fopen('php://output', 'w');
+
+        // HEADER CSV
+        fputcsv($handle, [
+            'Nama',
+            'Email',
+            'No HP',
+            'Tanggal',
+            'Waktu',
+            'Paket',
+            'Status',
+            'Fotografer'
+        ]);
+
+        $data = \App\Models\Reservasi::with('fotografer')->latest()->get();
+
+        foreach ($data as $r) {
+            fputcsv($handle, [
+                $r->nama,
+                $r->email,
+                $r->no_hp,
+                $r->tanggal,
+                substr($r->waktu_mulai,0,5).' - '.substr($r->waktu_selesai,0,5),
+                $r->tipe_paket,
+                $r->status,
+                optional($r->fotografer)->nama_fotografer,
+            ]);
+        }
+
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
 
 
 

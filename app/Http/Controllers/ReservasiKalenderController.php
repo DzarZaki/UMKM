@@ -10,7 +10,7 @@ class ReservasiKalenderController extends Controller
 {
     public function events(Request $request)
     {
-         $tz = config('app.timezone', 'Asia/Jakarta');
+        $tz = config('app.timezone', 'Asia/Jakarta');
 
         $start = $request->query('start');
         $end   = $request->query('end');
@@ -28,12 +28,26 @@ class ReservasiKalenderController extends Controller
             ->whereDate('tanggal', '>=', $startDate)
             ->whereDate('tanggal', '<', $endDate);
 
+        /*
+        |--------------------------------------------------------------------------
+        | ROLE FILTER (INI KUNCI UTAMA)
+        |--------------------------------------------------------------------------
+        */
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            // kalau fotografer / videografer → batasi data
+            if (in_array($user->role, ['fotografer','videografer','fotografer_videografer'])) {
+                $query->where('id_fotografer', $user->id);
+            }
+        }
+
         // default: jangan tampilkan NEW
         if (!$request->boolean('include_new')) {
             $query->where('status', '!=', 'new');
         }
 
-        // optional filters
+        // optional filters (ADMIN)
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
         }
@@ -46,7 +60,7 @@ class ReservasiKalenderController extends Controller
             $query->where('id_fotografer', $request->integer('id_fotografer'));
         }
 
-       $events = $query->get()->map(function ($r) use ($tz) {
+        $events = $query->get()->map(function ($r) use ($tz) {
             $start = Carbon::parse($r->tanggal.' '.$r->waktu_mulai, $tz)->format('Y-m-d\TH:i:s');
             $end   = Carbon::parse($r->tanggal.' '.$r->waktu_selesai, $tz)->format('Y-m-d\TH:i:s');
 

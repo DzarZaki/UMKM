@@ -63,6 +63,10 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'checkRole:admin'])->group(function () {
+    Route::resource('fotografer', FotograferController::class);
+
+    Route::get('/reservasi/export', [ReservasiController::class, 'export'])
+    ->name('reservasi.export');
 
     Route::get('/dashboard', function (Request $request) {
 
@@ -138,22 +142,41 @@ Route::middleware([
 
     Route::get('/dashboard-fotografer', function () {
 
-        $user = auth()->user();
+    $user = auth()->user();
 
-        $reservasi_list = Reservasi::where('id_fotografer', $user->id)
-            ->latest()
-            ->limit(30)
-            ->get();
+    // 🔑 AMBIL DATA FOTOGRAFER DARI USER LOGIN
+    $fotograferModel = Fotografer::where('user_id', $user->id)->first();
 
-        $stats = [];        // sementara kosong
-        $fotografer = collect(); // dropdown disembunyikan
+    // 🚨 JIKA USER BELUM TERHUBUNG KE FOTOGRAFER
+    if (!$fotograferModel) {
+        abort(403, 'Akun fotografer belum terhubung ke data fotografer.');
+    }
 
-        return view('dashboard', compact(
-            'reservasi_list',
-            'fotografer',
-            'stats'
-        ));
-    })->name('dashboard.fotografer');
+    $idFotografer = $fotograferModel->id;
+
+    // LIST RESERVASI KHUSUS FOTOGRAFER
+    $reservasi_list = Reservasi::where('id_fotografer', $idFotografer)
+        ->latest()
+        ->limit(30)
+        ->get();
+
+    // STATISTIK KHUSUS FOTOGRAFER
+    $stats = [
+        'assigned' => Reservasi::where('id_fotografer', $idFotografer)->count(),
+        'done' => Reservasi::where('id_fotografer', $idFotografer)
+                    ->where('status', 'done')
+                    ->count(),
+    ];
+
+    // dropdown fotografer disembunyikan
+    $fotografer = collect();
+
+    return view('dashboard', compact(
+        'reservasi_list',
+        'fotografer',
+        'stats'
+    ));
+})->name('dashboard.fotografer');
 });
 
 /*
