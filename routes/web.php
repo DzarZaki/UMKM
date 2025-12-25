@@ -49,6 +49,8 @@ Route::get('/booking/availability', [PemesananController::class, 'availability']
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
+    Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
+        ->name('calendar.events');
     Route::get('/login', [LoginController::class, 'login'])->name('login');
     Route::post('/login', [LoginController::class, 'authentication']);
 });
@@ -63,7 +65,7 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'checkRole:admin'])->group(function () {
-    Route::resource('fotografer', FotograferController::class);
+
 
     Route::get('/reservasi/export', [ReservasiController::class, 'export'])
     ->name('reservasi.export');
@@ -113,9 +115,6 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         Route::post('/update',[KalenderController::class, 'update']);
         Route::post('/delete',[KalenderController::class, 'destroy']);
     });
-
-    Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
-        ->name('calendar.events');
 
     // EXPORT
     Route::get('/reservasi/export/pdf', [ReservasiController::class, 'exportPdf'])

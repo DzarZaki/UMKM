@@ -16,8 +16,47 @@
     <!-- <link href="{{ asset('css/galeri-admin.css') }}" rel="stylesheet"> -->
 
     <!-- FullCalendar (BENAR) -->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/index.global.min.css"> -->
+    <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/index.global.min.css"> 
     <script src="https://unpkg.com/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <style>
+/* ===============================
+   FULLCALENDAR STATUS COLORS
+   =============================== */
+
+/* NEW */
+.fc-event.status-new {
+  background-color: #e2e6ea !important;
+  border-color: #e2e6ea !important;
+  color: #212529 !important;
+}
+
+/* PENDING */
+.fc-event.status-pending {
+  background-color: #f6c23e !important;
+  border-color: #f6c23e !important;
+  color: #212529 !important;
+}
+
+/* IN PROGRESS */
+.fc-event.status-in_progress {
+  background-color: #36b9cc !important;
+  border-color: #36b9cc !important;
+  color: #ffffff !important;
+}
+
+/* DONE */
+.fc-event.status-done {
+  background-color: #1cc88a !important;
+  border-color: #1cc88a !important;
+  color: #ffffff !important;
+}
+
+/* hover */
+.fc-event:hover {
+  filter: brightness(0.95);
+}
+</style>
 
 </head>
 

@@ -11,13 +11,14 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
+        // belum login
         if (!Auth::check()) {
-            return redirect('/login');
+            return redirect()->route('login');
         }
 
+        // role tidak sesuai
         if (!in_array(Auth::user()->role, $roles)) {
-            Auth::logout(); // ✅ FIX TYPO
-            return redirect('/login')->withErrors('Role tidak diizinkan');
+            abort(403, 'Anda tidak memiliki akses ke halaman ini');
         }
 
         return $next($request);
