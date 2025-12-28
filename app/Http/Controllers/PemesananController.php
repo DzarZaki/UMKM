@@ -80,6 +80,9 @@ class PemesananController extends Controller
         'waktu_selesai' => ['required','date_format:H:i','after:waktu_mulai'],
         'keterangan'    => ['nullable','string','max:1000'],
         'waiting_list'  => ['nullable','boolean'], 
+
+        // honeypot / anti spam (nilai plus)
+        'website'       => 'nullable|size:0',
     ]);
 
     // normalisasi waktu -> H:i:s

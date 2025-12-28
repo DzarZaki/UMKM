@@ -83,6 +83,18 @@
                     </a>
                 </li>
 
+@if(auth()->check() && auth()->user()->role === 'admin')
+    <li class="nav-item">
+        <a class="nav-link"
+           href="#"
+           data-toggle="modal"
+           data-target="#exportReportModal">
+            EXPORT / REPORT
+        </a>
+    </li>
+@endif
+
+
                 {{-- BOOKING BUTTON --}}
                 <li class="nav-item">
                     <a class="btn btn-booking ms-lg-3"

@@ -103,5 +103,56 @@
 <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script> -->
 @stack('scripts')
 
+@if(auth()->user()->role === 'admin')
+<div class="modal fade" id="exportReportModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="GET" action="{{ route('reservasi.export.excel') }}" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Export / Report</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Periode</label>
+          <div class="d-flex gap-2">
+            <input type="date" name="start_date" class="form-control">
+            <input type="date" name="end_date" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status" class="form-control">
+            <option value="">All</option>
+            <option value="new">New</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Fotografer</label>
+          <select name="id_fotografer" class="form-control">
+            <option value="">All</option>
+            @foreach($fotografer as $f)
+              <option value="{{ $f->id }}">
+                {{ $f->nama_fotografer }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-success">Export</button>
+      </div>
+    </form>
+  </div>
+</div>
+@endif
+
+
 </body>
 </html>

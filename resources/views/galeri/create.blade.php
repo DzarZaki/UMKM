@@ -45,3 +45,39 @@
 </div>
 
 @endsection
+
+<script>
+document.querySelector('form').addEventListener('submit', function (e) {
+    const fileInput = document.querySelector('input[name="file_galeri"]');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('File gambar wajib diupload');
+        e.preventDefault();
+        return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+
+    const fileType = file.type;
+    const fileName = file.name.toLowerCase();
+    const fileExtension = fileName.split('.').pop();
+
+    // cek MIME type
+    if (!allowedTypes.includes(fileType)) {
+        alert('File harus berupa gambar (JPG, JPEG, PNG, WEBP)');
+        fileInput.value = '';
+        e.preventDefault();
+        return;
+    }
+
+    // cek ekstensi
+    if (!allowedExtensions.includes(fileExtension)) {
+        alert('Ekstensi file tidak valid. Gunakan JPG, JPEG, PNG, atau WEBP');
+        fileInput.value = '';
+        e.preventDefault();
+        return;
+    }
+});
+</script>

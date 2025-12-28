@@ -142,3 +142,45 @@
     </a>
 </form>
 @endsection
+
+<script>
+document.querySelector('form').addEventListener('submit', function (e) {
+    const email = document.querySelector('input[name="email"]').value.trim();
+    const noHp = document.querySelector('input[name="no_hp"]').value.trim();
+    const fotografer = document.querySelector('select[name="id_fotografer"]').value;
+
+    // Validasi Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+        alert('Email wajib diisi');
+        e.preventDefault();
+        return;
+    }
+    if (!emailRegex.test(email)) {
+        alert('Format email tidak valid');
+        e.preventDefault();
+        return;
+    }
+
+    // Validasi No HP
+    const hpRegex = /^[0-9]{10,15}$/;
+    if (!noHp) {
+        alert('Nomor HP wajib diisi');
+        e.preventDefault();
+        return;
+    }
+    if (!hpRegex.test(noHp)) {
+        alert('Nomor HP harus berupa angka (10–15 digit)');
+        e.preventDefault();
+        return;
+    }
+
+    // Validasi Fotografer
+    if (!fotografer) {
+        alert('Silakan pilih fotografer / videografer');
+        e.preventDefault();
+        return;
+    }
+});
+</script>
+

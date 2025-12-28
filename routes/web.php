@@ -117,11 +117,9 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
     });
 
     // EXPORT
-    Route::get('/reservasi/export/pdf', [ReservasiController::class, 'exportPdf'])
-        ->name('reservasi.export.pdf');
-
     Route::get('/reservasi/export/excel', [ReservasiController::class, 'exportExcel'])
-        ->name('reservasi.export.excel');
+                ->name('reservasi.export.excel');
+
 
     Route::resource('fotografer', \App\Http\Controllers\FotograferController::class)
     ->except(['show','create','edit']);

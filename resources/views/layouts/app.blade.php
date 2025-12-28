@@ -56,20 +56,24 @@
 
     <!-- WhatsApp Form Script -->
     <script>
-        const waForm = document.getElementById('waForm');
+document.addEventListener('DOMContentLoaded', function () {
 
-        if (waForm) {
-            waForm.addEventListener('submit', function (e) {
-                e.preventDefault();
+    const waBtn = document.getElementById('btnWaSend');
+    if (!waBtn) return;
 
-                const message = document.getElementById('message').value;
-                const phone = '6282118111540'; // GANTI NOMOR JIKA PERLU
-                const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    waBtn.addEventListener('click', function (e) {
+        e.preventDefault();
 
-                window.open(url, '_blank');
-            });
-        }
-    </script>
+        const phone = '6282118111540'; // nomor WA tujuan (tanpa +)
+        const text  = 'Halo, saya ingin bertanya mengenai layanan fotografi.';
+
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    });
+
+});
+</script>
+
 
     @stack('scripts')
 

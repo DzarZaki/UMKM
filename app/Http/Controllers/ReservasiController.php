@@ -267,44 +267,28 @@ public function deleteJson(Request $request)
     return response()->json(['ok' => true]);
 }
 
-public function exportPdf(Request $request)
-{
-    $query = Reservasi::query()->latest();
-
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
-    }
-
-    if ($request->filled('tipe_paket')) {
-        $query->where('tipe_paket', $request->tipe_paket);
-    }
-
-    if ($request->filled('q')) {
-        $q = $request->q;
-        $query->where(function ($sub) use ($q) {
-            $sub->where('nama', 'like', "%{$q}%")
-                ->orWhere('email', 'like', "%{$q}%")
-                ->orWhere('no_hp', 'like', "%{$q}%");
-        });
-    }
-
-    $data = $query->get();
-
-    $pdf = Pdf::loadView('reservasi.export-pdf', [
-        'reservasi' => $data,
-        'generatedAt' => now(),
-    ])->setPaper('A4', 'landscape');
-
-    return $pdf->download('laporan-reservasi.pdf');
-}
-
 public function exportExcel(Request $request)
 {
+    $q = Reservasi::query();
+
+    if ($request->start_date && $request->end_date) {
+        $q->whereBetween('tanggal', [$request->start_date, $request->end_date]);
+    }
+
+    if ($request->status) {
+        $q->where('status', $request->status);
+    }
+
+    if ($request->id_fotografer) {
+        $q->where('id_fotografer', $request->id_fotografer);
+    }
+
     return Excel::download(
-        new ReservasiExport($request),
-        'laporan-reservasi.xlsx'
+        new ReservasiExport($q->get()),
+        'reservasi.xlsx'
     );
 }
+
 
 
 public function export()
