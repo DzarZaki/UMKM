@@ -125,13 +125,13 @@
 
 
     {{-- Kolom kanan: Kalender mirror --}}
-    <div class="col-12 col-lg-6">
+    <!-- <div class="col-12 col-lg-6">
         <div class ="pt-3">
       <div class="mb-2 d-flex justify-content-between align-items-center">
         <h5 class="mb-1 "></h5>
         <small class="text-muted">Booked = terisi</small>
       </div>
-      </div>
+      </div> -->
 
       <!-- @include('partials.mirrorCalendar') -->
     </div>
