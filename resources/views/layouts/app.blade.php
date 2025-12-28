@@ -8,10 +8,11 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1/main.min.css" rel="stylesheet"> -->
+
+    <!-- FullCalendar (jika dipakai di halaman tertentu) -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1/index.global.min.js"></script>
 
-    <!-- Font Awesome (WAJIB untuk IG & TikTok) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -31,16 +32,16 @@
     {{-- FOOTER --}}
     @include('partials.footer')
 
-    {{-- SOCIAL FLOAT (HARUS DI BODY, BUKAN SCRIPT) --}}
+    {{-- SOCIAL FLOAT --}}
     <div class="social-float">
-        <a href="https://www.instagram.com/dzargrad?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+        <a href="https://www.instagram.com/dzargrad"
            target="_blank"
            class="social-btn instagram"
            aria-label="Instagram">
             <i class="fab fa-instagram"></i>
         </a>
 
-        <a href="https://www.tiktok.com/@dzarlathuf?is_from_webapp=1&sender_device=pc"
+        <a href="https://www.tiktok.com/@dzarlathuf"
            target="_blank"
            class="social-btn tiktok"
            aria-label="TikTok">
@@ -51,29 +52,30 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Custom JS -->
-    <script src="{{ asset('js/home.js') }}"></cript>
+    <!-- Custom JS (FIX TYPO) -->
+    <script src="{{ asset('js/home.js') }}"></script>
 
-    <!-- WhatsApp Form Script -->
-    <script>
+    <!-- WhatsApp Send Message Script (FINAL & AMAN) -->
+   <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const waBtn = document.getElementById('btnWaSend');
-    if (!waBtn) return;
+    const btnWa = document.getElementById('btnWaSend');
+    if (!btnWa) return;
 
-    waBtn.addEventListener('click', function (e) {
-        e.preventDefault();
+    btnWa.addEventListener('click', function () {
 
-        const phone = '6282118111540'; // nomor WA tujuan (tanpa +)
-        const text  = 'Halo, saya ingin bertanya mengenai layanan fotografi.';
+        const phone = '6282118111540'; // TANPA +
+        const messageEl = document.getElementById('waMessage');
+        const text = messageEl && messageEl.value
+            ? messageEl.value
+            : 'Halo, saya ingin bertanya mengenai layanan fotografi.';
 
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
+        const waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+        window.open(waUrl, '_blank');
     });
 
 });
 </script>
-
 
     @stack('scripts')
 
