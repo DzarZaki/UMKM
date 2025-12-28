@@ -16,7 +16,7 @@ class ReservasiSeeder extends Seeder
         $baseDate = now();
 
         $make = function (int $i, string $status) use ($baseDate) {
-            $tanggal = $baseDate->copy()->addDays($i % 5)->toDateString();
+            $tanggal = $baseDate->copy()->addDays($i % 5`)->toDateString();
 
             $startHour = 8 + ($i % 6); // 08..13
             $waktuMulai = sprintf('%02d:00:00', $startHour);
