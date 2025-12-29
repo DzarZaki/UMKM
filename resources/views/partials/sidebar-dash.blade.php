@@ -82,28 +82,28 @@
 
 
         <!-- Tables -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="#">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Tables</span>
             </a>
-        </li>
+        </li> -->
 
         <!-- Fotografer -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="#">
                 <i class="fas fa-users"></i>
                 <span>Fotografer</span>
             </a>
-        </li>
+        </li> -->
 
         <!-- Extra Menu -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="{{ route('dashboard') }}">
                 <i class="fas fa-skull-crossbones"></i>
                 <span>Extra Menu</span>
             </a>
-        </li>
+        </li> -->
 
     @else
     <!-- ===================== -->

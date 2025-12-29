@@ -53,7 +53,7 @@ class ReservasiSeeder extends Seeder
         for ($i = 6; $i <= 9; $i++) $rows[] = $make($i, 'in_progress');
 
         // 1 done
-        $rows[] = $make(10, 'done');
+        $rows[] = $make(50, 'done');
 
         foreach ($rows as $data) {
             Reservasi::create($data);

@@ -4,7 +4,7 @@
 <style>
   /* area tabel yang scroll (bukan page) */
   .reservasi-table-wrap{
-    max-height: calc(100vh - 350px); /* sesuaikan kalau header layout kamu lebih tinggi/rendah */
+    max-height: calc(100vh - 50px); /* sesuaikan kalau header layout kamu lebih tinggi/rendah */
     overflow-y: auto;
     overflow-x: auto;
   }
@@ -25,68 +25,96 @@
   }
 </style>
 
-<h1 class="h3 mb-4 text-gray-800">Reservasi</h1>
-
-{{-- FILTER --}}
-<form method="GET" class="mb-3">
-  <div class="form-row">
-    <div class="col-md-3 mb-2">
-      <select name="status" class="form-control">
-        <option value="">-- Semua Status --</option>
-        @foreach(['new','pending','in_progress','done'] as $st)
-          <option value="{{ $st }}" {{ request('status')===$st ? 'selected' : '' }}>
-            {{ ucfirst(str_replace('_',' ', $st)) }}
-          </option>
-        @endforeach
-      </select>
-    </div>
-
-    <div class="col-md-3 mb-2">
-      <select name="tipe_paket" class="form-control">
-        <option value="">-- Semua Paket --</option>
-        @foreach($paketOptions as $p)
-          <option value="{{ $p }}" {{ request('tipe_paket')===$p ? 'selected' : '' }}>
-            {{ $p }}
-          </option>
-        @endforeach
-      </select>
-    </div>
-
-    <div class="col-md-4 mb-2">
-      <input type="text" name="q" class="form-control"
-             placeholder="Cari nama / email / no hp"
-             value="{{ request('q') }}">
-    </div>
-
-    <div class="col-md-2 mb-2">
-      <button class="btn btn-primary btn-block">Filter</button>
-    </div>
+{{-- Header / Toolbar --}}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-0 text-gray-800">Reservasi</h1>
+    <small class="text-muted">Kelola booking, status, dan jadwal</small>
   </div>
 
-  @if(request()->hasAny(['status','tipe_paket','q']))
-    <a href="{{ route('reservasi.index') }}" class="btn btn-link p-0">Reset</a>
-  @endif
-</form>
+  {{-- Tombol Tambah (MODAL) --}}
+  <button type="button" class="btn btn-success shadow-sm" id="btnTambah">
+    <i class="fas fa-plus mr-1"></i> Tambah Reservasi
+  </button>
+</div>
 
-{{-- Tombol Tambah (MODAL) --}}
-<button type="button" class="btn btn-success mb-3" id="btnTambah">
-  + Tambah Reservasi
-</button>
-
-
-
-
+{{-- Alert --}}
 @if(session('success'))
-  <div class="alert alert-success">{{ session('success') }}</div>
+  <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+    <i class="fas fa-check-circle mr-1"></i>
+    {{ session('success') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
 @endif
 
-<div class="card shadow">
+{{-- FILTER CARD --}}
+<div class="card shadow-sm border-0 mb-3">
+  <div class="card-body py-3">
+    <form method="GET">
+      <div class="form-row align-items-end">
+
+        <div class="col-md-3 mb-2">
+          <label class="small text-muted mb-1">Status</label>
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            @foreach(['new','pending','in_progress','done'] as $st)
+              <option value="{{ $st }}" {{ request('status')===$st ? 'selected' : '' }}>
+                {{ ucfirst(str_replace('_',' ', $st)) }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <div class="col-md-3 mb-2">
+          <label class="small text-muted mb-1">Tipe Paket</label>
+          <select name="tipe_paket" class="form-control">
+            <option value="">Semua Paket</option>
+            @foreach($paketOptions as $p)
+              <option value="{{ $p }}" {{ request('tipe_paket')===$p ? 'selected' : '' }}>
+                {{ $p }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <div class="col-md-4 mb-2">
+          <label class="small text-muted mb-1">Pencarian</label>
+          <input type="text"
+                 name="q"
+                 class="form-control"
+                 placeholder="Nama / email / no hp"
+                 value="{{ request('q') }}">
+        </div>
+
+        <div class="col-md-2 mb-2">
+          <button class="btn btn-primary btn-block shadow-sm">
+            <i class="fas fa-filter mr-1"></i> Filter
+          </button>
+
+          @if(request()->hasAny(['status','tipe_paket','q']))
+            <a href="{{ route('reservasi.index') }}" class="btn btn-link btn-block p-0 mt-1 small">
+              Reset
+            </a>
+          @endif
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+{{-- TABLE CARD --}}
+<div class="card shadow border-0">
   <div class="card-body p-0">
-    <div class="reservasi-table-wrap">
-      <table class="table table-bordered table-striped mb-0">
-        <thead class="bg-light">
+
+    {{-- Scroll wrapper (header tetap) --}}
+    <div class="table-responsive reservasi-table-wrap">
+      <table class="table table-hover mb-0">
+        <thead class="thead-light">
           <tr>
-            <th width="50">No</th>
+            <th width="60">No</th>
             <th>Nama</th>
             <th>Email</th>
             <th>No HP</th>
@@ -94,68 +122,96 @@
             <th>Tanggal</th>
             <th>Waktu</th>
             <th>Status</th>
-            <th width="160">Aksi</th>
+            <th width="170" class="text-center">Aksi</th>
           </tr>
         </thead>
 
-      <tbody>
-      @forelse($reservasi as $item)
-        @php
-          $badge = match($item->status) {
-            'new' => 'secondary',
-            'pending' => 'warning',
-            'in_progress' => 'info',
-            'done' => 'success',
-            default => 'secondary'
-          };
-        @endphp
+        <tbody>
+          @forelse($reservasi as $item)
+            @php
+              $badge = match($item->status) {
+                'new' => 'secondary',
+                'pending' => 'warning',
+                'in_progress' => 'info',
+                'done' => 'success',
+                default => 'secondary'
+              };
+            @endphp
 
-        <tr
-          data-id="{{ $item->id }}"
-          data-nama="{{ e($item->nama) }}"
-          data-email="{{ e($item->email) }}"
-          data-no_hp="{{ e($item->no_hp) }}"
-          data-tipe_paket="{{ e($item->tipe_paket ?? '') }}"
-          data-tanggal="{{ $item->tanggal }}"
-          data-waktu_mulai="{{ substr($item->waktu_mulai,0,5) }}"
-          data-waktu_selesai="{{ substr($item->waktu_selesai,0,5) }}"
-          data-keterangan="{{ e($item->keterangan ?? '') }}"
-          data-status="{{ $item->status }}"
-          data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
-          
-        >
-          <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
-          <td>{{ $item->nama }}</td>
-          <td>{{ $item->email }}</td>
-          <td>{{ $item->no_hp }}</td>
-          <td>{{ $item->tipe_paket ?? '-' }}</td>
-          <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-          <td>
-  <small class="text-muted">
-    {{ substr($item->waktu_mulai, 0, 5) }} - {{ substr($item->waktu_selesai, 0, 5) }}
-  </small>
-</td>
+            <tr
+              data-id="{{ $item->id }}"
+              data-nama="{{ e($item->nama) }}"
+              data-email="{{ e($item->email) }}"
+              data-no_hp="{{ e($item->no_hp) }}"
+              data-tipe_paket="{{ e($item->tipe_paket ?? '') }}"
+              data-tanggal="{{ $item->tanggal }}"
+              data-waktu_mulai="{{ substr($item->waktu_mulai,0,5) }}"
+              data-waktu_selesai="{{ substr($item->waktu_selesai,0,5) }}"
+              data-keterangan="{{ e($item->keterangan ?? '') }}"
+              data-status="{{ $item->status }}"
+              data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
+            >
+              <td class="text-muted">
+                {{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}
+              </td>
 
-          <td>
-            <span class="badge badge-{{ $badge }}">
-              {{ ucfirst(str_replace('_',' ', $item->status)) }}
-            </span>
-          </td>
-          <td>
-            <button type="button" class="btn btn-sm btn-warning mb-1 btnEdit">Edit</button>
-            <button type="button" class="btn btn-sm btn-danger btnHapus">Hapus</button>
-          </td>
-        </tr>
-      @empty
-        <tr>
-          <td colspan="9" class="text-center text-muted">Belum ada data reservasi</td>
-        </tr>
-      @endforelse
-      </tbody>
-    </table>
+              <td>
+                <div class="font-weight-bold text-dark">{{ $item->nama }}</div>
+                <!-- <div class="small text-muted">{{ $item->tipe_paket ?? '-' }}</div> -->
+              </td>
 
-    {{-- pagination --}}
-    {{ $reservasi->links() }}
+              <td class="text-muted">{{ $item->email }}</td>
+              <td class="text-muted">{{ $item->no_hp }}</td>
+              <td class="text-muted">{{ $item->tipe_paket ?? '-' }}</td>
+
+              <td class="text-muted">
+                {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+              </td>
+
+              <td>
+                <span class="small text-muted">
+                  {{ substr($item->waktu_mulai,0,5) }} - {{ substr($item->waktu_selesai,0,5) }}
+                </span>
+              </td>
+
+              <td>
+                <span class="badge badge-{{ $badge }}">
+                  {{ ucfirst(str_replace('_',' ', $item->status)) }}
+                </span>
+              </td>
+
+              <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-warning btnEdit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger btnHapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="9" class="text-center text-muted py-4">
+                Belum ada data reservasi
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  {{-- Pagination footer --}}
+  <div class="card-footer bg-white">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+      <small class="text-muted">
+        Menampilkan {{ $reservasi->count() }} data (halaman {{ $reservasi->currentPage() }} dari {{ $reservasi->lastPage() }})
+      </small>
+      <div>
+        {{ $reservasi->links() }}
+      </div>
+    </div>
   </div>
 </div>
 
