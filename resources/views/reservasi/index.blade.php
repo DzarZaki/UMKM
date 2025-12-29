@@ -259,13 +259,18 @@
             <div class="form-group mb-0">
               <label class="mb-1">Kalender (opsional)</label>
               <select id="id_kalender" class="form-control">
-                <option value="">-- pilih kalender --</option>
-                @foreach($kalender as $k)
-                  <option value="{{ $k->id }}">
-                    {{ $k->tanggal }} ({{ $k->waktu_mulai }}-{{ $k->waktu_selesai }})
-                  </option>
-                @endforeach
-              </select>
+    <option value="">-- pilih kalender --</option>
+
+    @forelse($kalender ?? [] as $k)
+        <option value="{{ $k->id }}">
+            {{ $k->tanggal }} ({{ $k->waktu_mulai }}-{{ $k->waktu_selesai }})
+        </option>
+    @empty
+        <option disabled>(Tidak ada jadwal)</option>
+    @endforelse
+
+</select>
+
             </div>
 
           </div>

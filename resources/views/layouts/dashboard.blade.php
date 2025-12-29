@@ -136,14 +136,19 @@
                 {{-- FOTOGRAFER --}}
                 <div class="form-group">
                     <label>Fotografer</label>
-                    <select name="id_fotografer" class="form-control">
-                    <option value="">All</option>
-                    @foreach($fotografer as $f)
-                        <option value="{{ $f->id }}">
-                            {{ $f->nama_fotografer }}
-                        </option>
-                    @endforeach
-                </select>
+<select name="id_fotografer" class="form-control">
+    <option value="">All</option>
+
+    @isset($fotografer)
+        @foreach($fotografer as $f)
+            <option value="{{ $f->id }}">
+                {{ $f->nama_fotografer }}
+            </option>
+        @endforeach
+    @endisset
+
+</select>
+
 
                 </div>
 
