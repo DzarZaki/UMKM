@@ -65,7 +65,7 @@
   <a href="https://drive.google.com/file/d/18_nfvGHXI-E4hhz19Y9fEqP8pEyh1Bnn/view"
      target="_blank"
      style="color:#aaa;text-decoration:underline">
-     Lihat Pricelist Kami Untuk Kemudahan
+     Lihat PRICELIST Kami Untuk Referensi
   </a>
 </small>
 
