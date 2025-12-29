@@ -36,7 +36,7 @@
 
     <!-- Heading -->
     <div class="sidebar-heading">
-        Interface
+        Menu
     </div>
 
     <!-- ===================== -->
@@ -110,12 +110,12 @@
     <!-- MENU FOTOGRAFER -->
     <!-- ===================== -->
 
-        <li class="nav-item {{ request()->routeIs('reservasi.*') ? 'active' : '' }}">
+        <!-- <li class="nav-item {{ request()->routeIs('reservasi.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('reservasi.index') }}">
                 <i class="fas fa-calendar-check"></i>
                 <span>Jadwal Saya</span>
             </a>
-        </li>
+        </li> -->
 
     @endif
 
