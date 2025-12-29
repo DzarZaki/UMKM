@@ -100,18 +100,18 @@
         </thead>
 
       <tbody>
-      @forelse($reservasi as $item)
-        @php
-          $badge = match($item->status) {
-            'new' => 'secondary',
-            'pending' => 'warning',
-            'in_progress' => 'info',
-            'done' => 'success',
-            default => 'secondary'
-          };
-        @endphp
+@forelse ($reservasi as $item)
+@php
+  $badge = match($item->status) {
+    'new' => 'secondary',
+    'pending' => 'warning',
+    'in_progress' => 'info',
+    'done' => 'success',
+    default => 'secondary'
+  };
+@endphp
 
-        <tr
+<tr
   data-id="{{ $item->id }}"
   data-nama="{{ e($item->nama) }}"
   data-email="{{ e($item->email) }}"
@@ -123,51 +123,56 @@
   data-keterangan="{{ e($item->keterangan ?? '') }}"
   data-status="{{ $item->status }}"
   data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
-  data-id_kalender="{{ $item->id_kalender ?? '' }}"
 >
+  <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
 
-      <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
+  <td>{{ $item->nama }}</td>
 
-<td>{{ $item->nama }}</td>
+  <td>{{ $item->email }}</td>
 
-<td>{{ $item->email }}</td>
-
-<td>
+  <td>
     {{ $item->no_hp }}
-    <a
-        href="https://wa.me/{{ preg_replace('/^0/', '62', $item->no_hp) }}"
-        target="_blank"
-        class="text-success ml-2"
-        title="Chat WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-</td>
+   <a
+              href="https://wa.me/{{ preg_replace('/^0/', '62', $item->no_hp) }}"
+              target="_blank"
+              class="text-muted ml-2"
+              title="Chat WhatsApp">
+              <i class="fas fa-external-link-alt fa-xs"></i>
+            </a>
+  </td>
 
-<td>
-    {{ $item->fotografer?->nama_fotografer ?? '-' }}
-</td>
+  <td>{{ $item->fotografer?->nama_fotografer ?? '-' }}</td>
 
-<td>{{ $item->tipe_paket ?? '-' }}</td>
+  <td>{{ $item->tipe_paket ?? '-' }}</td>
 
-<td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+  <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
 
+  {{-- ✅ KOLOM WAKTU (INI YANG HILANG) --}}
+  <td>
+    {{ substr($item->waktu_mulai,0,5) }} - {{ substr($item->waktu_selesai,0,5) }}
+  </td>
 
-          <td>
-            <span class="badge badge-{{ $badge }}">
-              {{ ucfirst(str_replace('_',' ', $item->status)) }}
-            </span>
-          </td>
-          <td>
-            <button type="button" class="btn btn-sm btn-warning mb-1 btnEdit">Edit</button>
-            <button type="button" class="btn btn-sm btn-danger btnHapus">Hapus</button>
-          </td>
-        </tr>
-      @empty
-        <tr>
-          <td colspan="9" class="text-center text-muted">Belum ada data reservasi</td>
-        </tr>
-      @endforelse
-      </tbody>
+  <td>
+    <span class="badge badge-{{ $badge }}">
+      {{ ucfirst(str_replace('_',' ', $item->status)) }}
+    </span>
+  </td>
+
+  <td>
+    <button type="button" class="btn btn-sm btn-warning btnEdit">Edit</button>
+    <button type="button" class="btn btn-sm btn-danger btnHapus">Hapus</button>
+  </td>
+</tr>
+
+@empty
+<tr>
+  <td colspan="10" class="text-center text-muted">
+    Belum ada data reservasi
+  </td>
+</tr>
+@endforelse
+</tbody>
+
     </table>
 
     {{-- pagination --}}
@@ -301,26 +306,25 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const csrf = '{{ csrf_token() }}';
-
   const modal = $('#reservasiModal');
-  const btnTambah = document.getElementById('btnTambah');
-  const btnSave = document.getElementById('btnSaveModal');
-//   const btnDelete = document.getElementById('btnDeleteModal');
 
-  const id_reservasi = document.getElementById('id_reservasi');
-  const nama = document.getElementById('nama');
-  const email = document.getElementById('email');
-  const no_hp = document.getElementById('no_hp');
-  const tipe_paket = document.getElementById('tipe_paket');
-  const tanggal = document.getElementById('tanggal');
-  const waktu_mulai = document.getElementById('waktu_mulai');
+  const id_reservasi  = document.getElementById('id_reservasi');
+  const nama          = document.getElementById('nama');
+  const email         = document.getElementById('email');
+  const no_hp         = document.getElementById('no_hp');
+  const tipe_paket    = document.getElementById('tipe_paket');
+  const tanggal       = document.getElementById('tanggal');
+  const waktu_mulai   = document.getElementById('waktu_mulai');
   const waktu_selesai = document.getElementById('waktu_selesai');
-  const keterangan = document.getElementById('keterangan');
-  const statusEl = document.getElementById('status');
+  const keterangan    = document.getElementById('keterangan');
+  const statusEl      = document.getElementById('status');
   const id_fotografer = document.getElementById('id_fotografer');
-  const id_kalender = document.getElementById('id_kalender');
+  const id_kalender   = document.getElementById('id_kalender');
 
-  function openCreate() {
+  /* =====================
+     TAMBAH
+  ===================== */
+  document.getElementById('btnTambah')?.addEventListener('click', function () {
     id_reservasi.value = '';
     nama.value = '';
     email.value = '';
@@ -330,42 +334,44 @@ document.addEventListener('DOMContentLoaded', function () {
     waktu_mulai.value = '';
     waktu_selesai.value = '';
     keterangan.value = '';
-    statusEl.value = 'pending'; // admin create default pending
+    statusEl.value = 'pending';
     id_fotografer.value = '';
     id_kalender.value = '';
-    // btnDelete.classList.add('d-none');
     modal.modal('show');
-  }
-
-  function openEdit(tr) {
-    id_reservasi.value = tr.dataset.id;
-    nama.value = tr.dataset.nama || '';
-    email.value = tr.dataset.email || '';
-    no_hp.value = tr.dataset.no_hp || '';
-    tipe_paket.value = tr.dataset.tipe_paket || '';
-    tanggal.value = tr.dataset.tanggal || '';
-    waktu_mulai.value = tr.dataset.waktu_mulai || '';
-    waktu_selesai.value = tr.dataset.waktu_selesai || '';
-    keterangan.value = tr.dataset.keterangan || '';
-    statusEl.value = tr.dataset.status || 'pending';
-    id_fotografer.value = tr.dataset.id_fotografer || '';
-    id_kalender.value = tr.dataset.id_kalender || '';
-    // btnDelete.classList.remove('d-none');
-    modal.modal('show');
-  }
-
-  btnTambah.addEventListener('click', openCreate);
-
-  document.querySelectorAll('.btnEdit').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const tr = this.closest('tr');
-      openEdit(tr);
-    });
   });
 
-  document.querySelectorAll('.btnHapus').forEach(btn => {
-    btn.addEventListener('click', async function() {
-      const tr = this.closest('tr');
+  /* =====================
+     EVENT DELEGATION
+     (EDIT & HAPUS)
+  ===================== */
+  document.addEventListener('click', async function (e) {
+
+    /* ===== EDIT ===== */
+    if (e.target.classList.contains('btnEdit')) {
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+
+      id_reservasi.value  = tr.dataset.id || '';
+      nama.value          = tr.dataset.nama || '';
+      email.value         = tr.dataset.email || '';
+      no_hp.value         = tr.dataset.no_hp || '';
+      tipe_paket.value    = tr.dataset.tipe_paket || '';
+      tanggal.value       = tr.dataset.tanggal || '';
+      waktu_mulai.value   = tr.dataset.waktu_mulai || '';
+      waktu_selesai.value = tr.dataset.waktu_selesai || '';
+      keterangan.value    = tr.dataset.keterangan || '';
+      statusEl.value      = tr.dataset.status || 'pending';
+      id_fotografer.value = tr.dataset.id_fotografer || '';
+      id_kalender.value   = tr.dataset.id_kalender || '';
+
+      modal.modal('show');
+    }
+
+    /* ===== HAPUS ===== */
+    if (e.target.classList.contains('btnHapus')) {
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+
       if (!confirm('Hapus data reservasi?')) return;
 
       const res = await fetch('/reservasi/delete', {
@@ -375,24 +381,29 @@ document.addEventListener('DOMContentLoaded', function () {
           'X-CSRF-TOKEN': csrf,
           'Accept': 'application/json',
         },
-        credentials: 'same-origin',
         body: JSON.stringify({ id: tr.dataset.id })
       });
 
       if (!res.ok) {
-        alert('Gagal hapus. Cek console/network.');
-        console.log(await res.text());
+        const err = await res.json();
+        alert(err.message || 'Gagal hapus data');
         return;
       }
 
       location.reload();
-    });
+    }
+
   });
 
-  btnSave.addEventListener('click', async function() {
+  /* =====================
+     SIMPAN (CREATE / UPDATE)
+  ===================== */
+  document.getElementById('btnSaveModal')?.addEventListener('click', async function () {
     if (!nama.value.trim()) return alert('Nama wajib diisi');
     if (!tanggal.value) return alert('Tanggal wajib diisi');
-    if (!waktu_mulai.value || !waktu_selesai.value || waktu_mulai.value >= waktu_selesai.value) return alert('Jam tidak valid');
+    if (!waktu_mulai.value || !waktu_selesai.value || waktu_mulai.value >= waktu_selesai.value) {
+      return alert('Jam tidak valid');
+    }
 
     const isUpdate = !!id_reservasi.value;
 
@@ -423,20 +434,18 @@ document.addEventListener('DOMContentLoaded', function () {
         'X-CSRF-TOKEN': csrf,
         'Accept': 'application/json',
       },
-      credentials: 'same-origin',
       body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
-      alert('Gagal simpan. Cek console/network.');
-      console.log(await res.text());
+      const err = await res.json();
+      alert(err.message || 'Terjadi kesalahan');
       return;
     }
 
     modal.modal('hide');
     location.reload();
   });
-
 //   btnDelete.addEventListener('click', async function() {
 //     const id = id_reservasi.value;
 //     if (!id) return;

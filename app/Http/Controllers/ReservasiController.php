@@ -21,20 +21,16 @@ class ReservasiController extends Controller
      */
 public function index(Request $request)
 {
-    // ✅ WAJIB ADA
     $query = Reservasi::with('fotografer')->latest();
 
-    // FILTER STATUS
     if ($request->filled('status')) {
         $query->where('status', $request->status);
     }
 
-    // FILTER PAKET
     if ($request->filled('tipe_paket')) {
         $query->where('tipe_paket', $request->tipe_paket);
     }
 
-    // SEARCH
     if ($request->filled('q')) {
         $q = $request->q;
         $query->where(function ($sub) use ($q) {
@@ -44,10 +40,8 @@ public function index(Request $request)
         });
     }
 
-    // ✅ PAGINATION (ERROR ADA DI SINI SEBELUMNYA)
     $reservasi = $query->paginate(20)->withQueryString();
 
-    // DROPDOWN PAKET
     $paketOptions = Reservasi::query()
         ->whereNotNull('tipe_paket')
         ->where('tipe_paket', '!=', '')
@@ -55,15 +49,17 @@ public function index(Request $request)
         ->orderBy('tipe_paket')
         ->pluck('tipe_paket');
 
-    // DROPDOWN FOTOGRAFER (EXPORT + MODAL)
     $fotografer = \App\Models\Fotografer::orderBy('nama_fotografer')->get();
+    $kalender   = \App\Models\Kalender::orderBy('tanggal')->get();
 
     return view('reservasi.index', compact(
         'reservasi',
         'paketOptions',
-        'fotografer'
+        'fotografer',
+        'kalender'
     ));
 }
+
 
 
 
@@ -198,6 +194,24 @@ public function index(Request $request)
             'keterangan'      => ['nullable', 'string'],
             'status'          => ['required', Rule::in(['new','pending','in_progress','done'])]
         ]);
+        // 🚨 CEK BENTROK JADWAL FOTOGRAFER
+if ($request->id_fotografer) {
+
+    $bentrok = Reservasi::where('id_fotografer', $request->id_fotografer)
+        ->where('tanggal', $request->tanggal)
+        ->where(function ($q) use ($request) {
+            $q->where('waktu_mulai', '<', $request->waktu_selesai)
+              ->where('waktu_selesai', '>', $request->waktu_mulai);
+        })
+        ->exists();
+
+    if ($bentrok) {
+        return response()->json([
+            'message' => 'Fotografer sudah memiliki jadwal di waktu tersebut'
+        ], 422);
+    }
+}
+
 
     $reservasi = Reservasi::create($data);
 
@@ -227,6 +241,26 @@ public function updateJson(Request $request)
         'status'          => ['required', Rule::in(['new','pending','in_progress','done'])],
     ]);
 
+    // 🚨 CEK BENTROK (KECUALI DATA SENDIRI)
+if ($request->id_fotografer) {
+
+    $bentrok = Reservasi::where('id_fotografer', $request->id_fotografer)
+        ->where('tanggal', $request->tanggal)
+        ->where('id', '!=', $request->id)
+        ->where(function ($q) use ($request) {
+            $q->where('waktu_mulai', '<', $request->waktu_selesai)
+              ->where('waktu_selesai', '>', $request->waktu_mulai);
+        })
+        ->exists();
+
+    if ($bentrok) {
+        return response()->json([
+            'message' => 'Fotografer sudah memiliki jadwal di waktu tersebut'
+        ], 422);
+    }
+}
+
+
         $reservasi = Reservasi::findOrFail($data['id']);
         unset($data['id']);
 
@@ -248,16 +282,34 @@ public function updateTime(Request $request)
     ]);
 
     $reservasi = Reservasi::findOrFail($data['id']);
-    $reservasi->update([
-    'id_fotografer' => $data['id_fotografer'] ?? $reservasi->id_fotografer,
-    'tanggal'       => $data['tanggal'],
-    'waktu_mulai'   => $data['waktu_mulai'],
-    'waktu_selesai' => $data['waktu_selesai'],
-]);
 
+    // 🚨 CEK BENTROK
+    if ($reservasi->id_fotografer) {
+        $bentrok = Reservasi::where('id_fotografer', $reservasi->id_fotografer)
+            ->where('tanggal', $data['tanggal'])
+            ->where('id', '!=', $reservasi->id)
+            ->where(function ($q) use ($data) {
+                $q->where('waktu_mulai', '<', $data['waktu_selesai'])
+                  ->where('waktu_selesai', '>', $data['waktu_mulai']);
+            })
+            ->exists();
+
+        if ($bentrok) {
+            return response()->json([
+                'message' => 'Fotografer sudah memiliki jadwal di waktu tersebut'
+            ], 422);
+        }
+    }
+
+    $reservasi->update([
+        'tanggal'       => $data['tanggal'],
+        'waktu_mulai'   => $data['waktu_mulai'],
+        'waktu_selesai' => $data['waktu_selesai'],
+    ]);
 
     return response()->json(['ok' => true]);
 }
+
 
 public function deleteJson(Request $request)
 {
