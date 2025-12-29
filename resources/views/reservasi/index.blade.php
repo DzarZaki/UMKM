@@ -269,22 +269,6 @@
                 @endforeach
               </select>
             </div>
-
-            <div class="form-group mb-0">
-              <label class="mb-1">Kalender (opsional)</label>
-              <select id="id_kalender" class="form-control">
-    <option value="">-- pilih kalender --</option>
-
-    @forelse($kalender ?? [] as $k)
-        <option value="{{ $k->id }}">
-            {{ $k->tanggal }} ({{ $k->waktu_mulai }}-{{ $k->waktu_selesai }})
-        </option>
-    @empty
-        <option disabled>(Tidak ada jadwal)</option>
-    @endforelse
-
-</select>
-
             </div>
 
           </div>
@@ -319,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const keterangan    = document.getElementById('keterangan');
   const statusEl      = document.getElementById('status');
   const id_fotografer = document.getElementById('id_fotografer');
-  const id_kalender   = document.getElementById('id_kalender');
+ 
 
   /* =====================
      TAMBAH
@@ -336,7 +320,6 @@ document.addEventListener('DOMContentLoaded', function () {
     keterangan.value = '';
     statusEl.value = 'pending';
     id_fotografer.value = '';
-    id_kalender.value = '';
     modal.modal('show');
   });
 
@@ -362,7 +345,6 @@ document.addEventListener('DOMContentLoaded', function () {
       keterangan.value    = tr.dataset.keterangan || '';
       statusEl.value      = tr.dataset.status || 'pending';
       id_fotografer.value = tr.dataset.id_fotografer || '';
-      id_kalender.value   = tr.dataset.id_kalender || '';
 
       modal.modal('show');
     }
@@ -410,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const payload = {
       id: isUpdate ? Number(id_reservasi.value) : null,
       id_fotografer: id_fotografer.value ? Number(id_fotografer.value) : null,
-      id_kalender: id_kalender.value ? Number(id_kalender.value) : null,
+
 
       nama: nama.value,
       email: email.value,

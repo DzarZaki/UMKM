@@ -50,13 +50,13 @@ public function index(Request $request)
         ->pluck('tipe_paket');
 
     $fotografer = \App\Models\Fotografer::orderBy('nama_fotografer')->get();
-    $kalender   = \App\Models\Kalender::orderBy('tanggal')->get();
+    
 
     return view('reservasi.index', compact(
         'reservasi',
         'paketOptions',
         'fotografer',
-        'kalender'
+       
     ));
 }
 
