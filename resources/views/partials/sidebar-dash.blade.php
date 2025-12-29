@@ -52,6 +52,16 @@
             </a>
         </li>
 
+        @if(auth()->user()->role === 'admin')
+<li class="nav-item">
+    <a class="nav-link" href="#" data-toggle="modal" data-target="#exportReportModal">
+        <i class="fas fa-file-export"></i>
+        <span>Export / Report</span>
+    </a>
+</li>
+@endif
+
+
         <!-- Galeri -->
         <li class="nav-item {{ request()->routeIs('galeri.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('galeri.index') }}">

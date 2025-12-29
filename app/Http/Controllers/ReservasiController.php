@@ -269,25 +269,31 @@ public function deleteJson(Request $request)
 
 public function exportExcel(Request $request)
 {
-    $q = Reservasi::query();
+    $query = Reservasi::with('fotografer')->latest();
 
-    if ($request->start_date && $request->end_date) {
-        $q->whereBetween('tanggal', [$request->start_date, $request->end_date]);
+    if ($request->filled('start_date') && $request->filled('end_date')) {
+        $query->whereBetween('tanggal', [
+            $request->start_date,
+            $request->end_date
+        ]);
     }
 
-    if ($request->status) {
-        $q->where('status', $request->status);
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
     }
 
-    if ($request->id_fotografer) {
-        $q->where('id_fotografer', $request->id_fotografer);
+    if ($request->filled('id_fotografer')) {
+        $query->where('id_fotografer', $request->id_fotografer);
     }
+
+    $reservasi = $query->get(); // 🔑 DATA FIX DI SINI
 
     return Excel::download(
-        new ReservasiExport($q->get()),
-        'reservasi.xlsx'
+        new \App\Exports\ReservasiExport($reservasi),
+        'reservasi-' . now()->format('Y-m-d') . '.xlsx'
     );
 }
+
 
 
 
