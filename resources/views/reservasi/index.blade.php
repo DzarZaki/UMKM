@@ -188,6 +188,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
+      <!-- HEADER -->
       <div class="modal-header py-2">
         <h5 class="modal-title mb-0" id="modalTitle">Reservasi</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -195,10 +196,12 @@
         </button>
       </div>
 
+      <!-- BODY -->
       <div class="modal-body pt-3 pb-2">
         <input type="hidden" id="id_reservasi">
 
         <div class="row">
+
           <!-- KIRI -->
           <div class="col-md-6">
             <div class="form-group mb-2">
@@ -229,6 +232,7 @@
 
           <!-- KANAN -->
           <div class="col-md-6">
+
             <div class="form-row">
               <div class="form-group col-md-6 mb-2">
                 <label class="mb-1">Tanggal</label>
@@ -269,20 +273,21 @@
                 @endforeach
               </select>
             </div>
-            </div>
 
-          </div>
-        </div>
-      </div>
+          </div><!-- /KANAN -->
 
+        </div><!-- /row -->
+      </div><!-- /modal-body -->
+
+      <!-- FOOTER -->
       <div class="modal-footer py-2">
-        <!-- <button type="button" class="btn btn-danger d-none" id="btnDeleteModal">Hapus</button> -->
         <button type="button" class="btn btn-primary" id="btnSaveModal">Simpan</button>
       </div>
 
     </div>
   </div>
 </div>
+
 
 @endsection
 
