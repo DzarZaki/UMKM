@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center"
@@ -36,7 +36,7 @@
 
     <!-- Heading -->
     <div class="sidebar-heading">
-        Interface
+        Menu
     </div>
 
     <!-- ===================== -->
@@ -82,40 +82,40 @@
 
 
         <!-- Tables -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="#">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Tables</span>
             </a>
-        </li>
+        </li> -->
 
         <!-- Fotografer -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="#">
                 <i class="fas fa-users"></i>
                 <span>Fotografer</span>
             </a>
-        </li>
+        </li> -->
 
         <!-- Extra Menu -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="{{ route('dashboard') }}">
                 <i class="fas fa-skull-crossbones"></i>
                 <span>Extra Menu</span>
             </a>
-        </li>
+        </li> -->
 
     @else
     <!-- ===================== -->
     <!-- MENU FOTOGRAFER -->
     <!-- ===================== -->
 
-        <li class="nav-item {{ request()->routeIs('reservasi.*') ? 'active' : '' }}">
+        <!-- <li class="nav-item {{ request()->routeIs('reservasi.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('reservasi.index') }}">
                 <i class="fas fa-calendar-check"></i>
                 <span>Jadwal Saya</span>
             </a>
-        </li>
+        </li> -->
 
     @endif
 

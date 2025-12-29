@@ -52,9 +52,8 @@ class ReservasiController extends Controller
 
     // dropdown modal harus dari tabel fotografer & kalender
     $fotografer = Fotografer::orderBy('nama_fotografer')->get();
-    $kalender   = Kalender::orderBy('tanggal')->orderBy('waktu_mulai')->get();
 
-    return view('reservasi.index', compact('reservasi', 'paketOptions', 'fotografer', 'kalender'));
+    return view('reservasi.index', compact('reservasi', 'paketOptions', 'fotografer'));
 }
 
 
@@ -70,9 +69,7 @@ class ReservasiController extends Controller
             'fotografer_videografer'
         ])->get();
 
-        $kalender = Kalender::all();
-
-        return view('reservasi.create', compact('fotografer', 'kalender'));
+        return view('reservasi.create', compact('fotografer'));
     }
 
     /**
@@ -91,13 +88,13 @@ class ReservasiController extends Controller
         'keterangan'  => 'nullable|string',
 
         'id_fotografer' => 'nullable|exists:fotografer,id',
-        'id_kalender'   => 'nullable|exists:kalender,id',
+        
         'status'        => 'required|in:pending,in_progress,done',
     ]);
 
    Reservasi::create([
     'id_fotografer' => $request->id_fotografer,
-    'id_kalender'   => $request->id_kalender,
+    
     'nama'          => $request->nama,
     'email'         => $request->email,
     'no_hp'         => $request->no_hp,
@@ -129,9 +126,9 @@ class ReservasiController extends Controller
             'fotografer_videografer'
         ])->get();
 
-        $kalender = Kalender::all();
+        
 
-        return view('reservasi.edit', compact('reservasi', 'fotografer', 'kalender'));
+        return view('reservasi.edit', compact('reservasi', 'fotografer'));
     }
 
     /**
@@ -141,7 +138,6 @@ class ReservasiController extends Controller
     {
         $request->validate([
             'id_fotografer'    => 'required|exists:fotografer,id',
-            'id_kalender'      => 'required|exists:kalender,id',
             'nama'       => 'required|string|max:255',
             'email'            => 'required|email',
             'tanggal'          => 'required|date',
@@ -151,7 +147,6 @@ class ReservasiController extends Controller
         $reservasi = Reservasi::findOrFail($id);
         $reservasi->update($request->only([
             'id_fotografer',
-            'id_kalender',
             'nama',
             'email',
             'tanggal',
@@ -180,7 +175,6 @@ class ReservasiController extends Controller
     {
         $data = $request->validate([
             'id_fotografer' => ['nullable', 'integer', Rule::exists('fotografer', 'id')],
-            'id_kalender'     => ['nullable', 'integer', 'exists:kalender,id'],
 
             'nama'            => ['required', 'string', 'max:255'],
             'email'           => ['required', 'email', 'max:255'],
@@ -209,7 +203,6 @@ public function updateJson(Request $request)
         'id'              => ['required', 'integer', 'exists:reservasi,id'],
 
         'id_fotografer' => ['nullable', 'integer', Rule::exists('fotografer', 'id')],
-        'id_kalender'     => ['nullable', 'integer', 'exists:kalender,id'],
 
         'nama'            => ['required', 'string', 'max:255'],
         'email'           => ['required', 'email', 'max:255'],

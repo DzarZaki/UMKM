@@ -127,17 +127,7 @@
           <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
           <td>{{ $item->nama }}</td>
           <td>{{ $item->email }}</td>
-          <td>
-  {{ $item->no_hp }}
-  <a
-    href="https://wa.me/{{ preg_replace('/^0/', '62', $item->no_hp) }}"
-    target="_blank"
-    class="text-success ml-2"
-    title="Chat WhatsApp">
-    <i class="fab fa-whatsapp"></i>
-  </a>
-</td>
-
+          <td>{{ $item->no_hp }}</td>
           <td>{{ $item->tipe_paket ?? '-' }}</td>
           <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
           <td>

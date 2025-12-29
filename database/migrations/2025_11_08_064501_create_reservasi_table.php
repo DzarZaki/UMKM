@@ -19,12 +19,6 @@ return new class extends Migration
       ->constrained('fotografer')
       ->nullOnDelete();
 
-    $table->foreignId('id_kalender')
-      ->nullable()
-      ->constrained('kalender')
-      ->nullOnDelete();
-
-
     $table->string('nama');
     $table->string('email');
     $table->string('no_hp');

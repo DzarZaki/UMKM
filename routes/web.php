@@ -49,16 +49,22 @@ Route::get('/booking/availability', [PemesananController::class, 'availability']
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
-        ->name('calendar.events');
     Route::get('/login', [LoginController::class, 'login'])->name('login');
     Route::post('/login', [LoginController::class, 'authentication']);
 });
 
-Route::post('/logout', [LoginController::class, 'logout'])
-    ->name('logout')
-    ->middleware('auth');
+// Route::post('/logout', [LoginController::class, 'logout'])
+//     ->name('logout')
+//     ->middleware('auth');
 
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])
+        ->name('logout');
+
+    Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
+        ->name('calendar.events');
+});    
 /*
 |--------------------------------------------------------------------------
 | ADMIN DASHBOARD
@@ -154,7 +160,7 @@ Route::middleware([
     // LIST RESERVASI KHUSUS FOTOGRAFER
     $reservasi_list = Reservasi::where('id_fotografer', $idFotografer)
         ->latest()
-        ->limit(30)
+        ->limit(20)
         ->get();
 
     // STATISTIK KHUSUS FOTOGRAFER
