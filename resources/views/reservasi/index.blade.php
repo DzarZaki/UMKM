@@ -90,6 +90,7 @@
             <th>Nama</th>
             <th>Email</th>
             <th>No HP</th>
+            <th>Fotografer</th>
             <th>Tipe Paket</th>
             <th>Tanggal</th>
             <th>Waktu</th>
@@ -111,40 +112,45 @@
         @endphp
 
         <tr
-          data-id="{{ $item->id }}"
-          data-nama="{{ e($item->nama) }}"
-          data-email="{{ e($item->email) }}"
-          data-no_hp="{{ e($item->no_hp) }}"
-          data-tipe_paket="{{ e($item->tipe_paket ?? '') }}"
-          data-tanggal="{{ $item->tanggal }}"
-          data-waktu_mulai="{{ substr($item->waktu_mulai,0,5) }}"
-          data-waktu_selesai="{{ substr($item->waktu_selesai,0,5) }}"
-          data-keterangan="{{ e($item->keterangan ?? '') }}"
-          data-status="{{ $item->status }}"
-          data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
-          data-id_kalender="{{ $item->id_kalender ?? '' }}"
-        >
-          <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
-          <td>{{ $item->nama }}</td>
-          <td>{{ $item->email }}</td>
-          <td>
-            {{ $item->no_hp }}
-            <a
-              href="https://wa.me/{{ preg_replace('/^0/', '62', $item->no_hp) }}"
-              target="_blank"
-              class="text-success ml-2"
-              title="Chat WhatsApp">
-              <i class="fab fa-whatsapp"></i>
-            </a>
-          </td>
+  data-id="{{ $item->id }}"
+  data-nama="{{ e($item->nama) }}"
+  data-email="{{ e($item->email) }}"
+  data-no_hp="{{ e($item->no_hp) }}"
+  data-tipe_paket="{{ e($item->tipe_paket ?? '') }}"
+  data-tanggal="{{ $item->tanggal }}"
+  data-waktu_mulai="{{ substr($item->waktu_mulai,0,5) }}"
+  data-waktu_selesai="{{ substr($item->waktu_selesai,0,5) }}"
+  data-keterangan="{{ e($item->keterangan ?? '') }}"
+  data-status="{{ $item->status }}"
+  data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
+  data-id_kalender="{{ $item->id_kalender ?? '' }}"
+>
 
-          <td>{{ $item->tipe_paket ?? '-' }}</td>
-          <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-          <td>
-  <small class="text-muted">
-    {{ substr($item->waktu_mulai, 0, 5) }} - {{ substr($item->waktu_selesai, 0, 5) }}
-  </small>
+      <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
+
+<td>{{ $item->nama }}</td>
+
+<td>{{ $item->email }}</td>
+
+<td>
+    {{ $item->no_hp }}
+    <a
+        href="https://wa.me/{{ preg_replace('/^0/', '62', $item->no_hp) }}"
+        target="_blank"
+        class="text-success ml-2"
+        title="Chat WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 </td>
+
+<td>
+    {{ $item->fotografer?->nama_fotografer ?? '-' }}
+</td>
+
+<td>{{ $item->tipe_paket ?? '-' }}</td>
+
+<td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+
 
           <td>
             <span class="badge badge-{{ $badge }}">
@@ -165,7 +171,10 @@
     </table>
 
     {{-- pagination --}}
-    {{ $reservasi->links() }}
+<div class="d-flex justify-content-center mt-3">
+    {{ $reservasi->links('pagination::bootstrap-4') }}
+</div>
+
   </div>
 </div>
 

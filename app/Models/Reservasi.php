@@ -26,7 +26,7 @@ class Reservasi extends Model
     ];
     public function fotografer()
 {
-    return $this->belongsTo(Fotografer::class, 'id_fotografer');
+    return $this->belongsTo(\App\Models\Fotografer::class, 'id_fotografer');
 }
 
 }

@@ -19,20 +19,24 @@ class ReservasiController extends Controller
     /**
      * Tampilkan daftar reservasi
      */
-    public function index(Request $request)
+public function index(Request $request)
 {
-    $query = Reservasi::query()->latest();
+    // ✅ WAJIB ADA
+    $query = Reservasi::with('fotografer')->latest();
 
+    // FILTER STATUS
     if ($request->filled('status')) {
-        $query->where('status', $request->string('status'));
+        $query->where('status', $request->status);
     }
 
+    // FILTER PAKET
     if ($request->filled('tipe_paket')) {
-        $query->where('tipe_paket', $request->string('tipe_paket'));
+        $query->where('tipe_paket', $request->tipe_paket);
     }
 
+    // SEARCH
     if ($request->filled('q')) {
-        $q = $request->string('q');
+        $q = $request->q;
         $query->where(function ($sub) use ($q) {
             $sub->where('nama', 'like', "%{$q}%")
                 ->orWhere('email', 'like', "%{$q}%")
@@ -40,9 +44,10 @@ class ReservasiController extends Controller
         });
     }
 
-    // kalau mau pagination:
+    // ✅ PAGINATION (ERROR ADA DI SINI SEBELUMNYA)
     $reservasi = $query->paginate(20)->withQueryString();
 
+    // DROPDOWN PAKET
     $paketOptions = Reservasi::query()
         ->whereNotNull('tipe_paket')
         ->where('tipe_paket', '!=', '')
@@ -50,11 +55,16 @@ class ReservasiController extends Controller
         ->orderBy('tipe_paket')
         ->pluck('tipe_paket');
 
-    // dropdown modal harus dari tabel fotografer & kalender
-    $fotografer = Fotografer::orderBy('nama_fotografer')->get();
+    // DROPDOWN FOTOGRAFER (EXPORT + MODAL)
+    $fotografer = \App\Models\Fotografer::orderBy('nama_fotografer')->get();
 
-    return view('reservasi.index', compact('reservasi', 'paketOptions', 'fotografer'));
+    return view('reservasi.index', compact(
+        'reservasi',
+        'paketOptions',
+        'fotografer'
+    ));
 }
+
 
 
     /**
@@ -264,31 +274,26 @@ public function exportExcel(Request $request)
 {
     $q = Reservasi::with('fotografer')->latest();
 
-    // PERIODE (opsional)
-    if ($request->filled('start_date') && $request->filled('end_date')) {
+    if ($request->start_date && $request->end_date) {
         $q->whereBetween('tanggal', [
             $request->start_date,
             $request->end_date
         ]);
     }
 
-    // STATUS (hanya jika bukan All)
     if ($request->filled('status')) {
         $q->where('status', $request->status);
     }
 
-    // FOTOGRAFER (hanya jika bukan All)
     if ($request->filled('id_fotografer')) {
         $q->where('id_fotografer', $request->id_fotografer);
     }
 
-    
     return \Maatwebsite\Excel\Facades\Excel::download(
         new \App\Exports\ReservasiExport($q->get()),
         'reservasi.xlsx'
     );
 }
-
 
 
 
