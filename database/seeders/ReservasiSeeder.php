@@ -26,7 +26,6 @@ class ReservasiSeeder extends Seeder
 
             return [
                 'id_fotografer' => null, // aman walau fotografer belum di-assign
-                'id_kalender'   => null,
 
                 'nama'  => "Klien {$status} {$i}",
                 'email' => "klien_{$status}_{$i}@example.com",

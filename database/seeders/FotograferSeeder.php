@@ -11,7 +11,7 @@ class FotograferSeeder extends Seeder
     public function run(): void
     {
         // ambil user yang role-nya fotografer atau fotografer_videografer
-        $users = User::whereIn('role', ['fotografer', 'fotografer_videografer'])->get();
+        $users = User::whereIn('role', ['fotografer', 'fotografer_videografer', 'videografer'])->get();
 
         // spesialisasi optional (ubah sesuai kebutuhan)
         $specMap = [

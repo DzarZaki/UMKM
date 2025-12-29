@@ -13,7 +13,7 @@ class Reservasi extends Model
 
     protected $fillable = [
         'id_fotografer',
-        'id_kalender',
+        // 'id_kalender',
         'nama',
         'email',
         'no_hp',

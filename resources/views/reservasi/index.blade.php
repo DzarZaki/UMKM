@@ -122,7 +122,7 @@
           data-keterangan="{{ e($item->keterangan ?? '') }}"
           data-status="{{ $item->status }}"
           data-id_fotografer="{{ $item->id_fotografer ?? '' }}"
-          data-id_kalender="{{ $item->id_kalender ?? '' }}"
+          
         >
           <td>{{ ($reservasi->currentPage()-1)*$reservasi->perPage() + $loop->iteration }}</td>
           <td>{{ $item->nama }}</td>
@@ -246,17 +246,7 @@
               </select>
             </div>
 
-            <div class="form-group mb-0">
-              <label class="mb-1">Kalender (opsional)</label>
-              <select id="id_kalender" class="form-control">
-                <option value="">-- pilih kalender --</option>
-                @foreach($kalender as $k)
-                  <option value="{{ $k->id }}">
-                    {{ $k->tanggal }} ({{ $k->waktu_mulai }}-{{ $k->waktu_selesai }})
-                  </option>
-                @endforeach
-              </select>
-            </div>
+    
 
           </div>
         </div>
@@ -294,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const keterangan = document.getElementById('keterangan');
   const statusEl = document.getElementById('status');
   const id_fotografer = document.getElementById('id_fotografer');
-  const id_kalender = document.getElementById('id_kalender');
+  // const id_kalender = document.getElementById('id_kalender');
 
   function openCreate() {
     id_reservasi.value = '';
@@ -308,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
     keterangan.value = '';
     statusEl.value = 'pending'; // admin create default pending
     id_fotografer.value = '';
-    id_kalender.value = '';
+    // id_kalender.value = '';
     // btnDelete.classList.add('d-none');
     modal.modal('show');
   }
@@ -325,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
     keterangan.value = tr.dataset.keterangan || '';
     statusEl.value = tr.dataset.status || 'pending';
     id_fotografer.value = tr.dataset.id_fotografer || '';
-    id_kalender.value = tr.dataset.id_kalender || '';
+    // id_kalender.value = tr.dataset.id_kalender || '';
     // btnDelete.classList.remove('d-none');
     modal.modal('show');
   }
@@ -375,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const payload = {
       id: isUpdate ? Number(id_reservasi.value) : null,
       id_fotografer: id_fotografer.value ? Number(id_fotografer.value) : null,
-      id_kalender: id_kalender.value ? Number(id_kalender.value) : null,
+      // id_kalender: id_kalender.value ? Number(id_kalender.value) : null,
 
       nama: nama.value,
       email: email.value,

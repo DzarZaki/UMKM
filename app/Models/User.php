@@ -38,10 +38,10 @@ class User extends Authenticatable
         return $this->hasOne(Fotografer::class);
     }
 
-    public function kalender()
-    {
-        return $this->hasMany(Kalender::class);
-    }
+    // public function kalender()
+    // {
+    //     return $this->hasMany(Kalender::class);
+    // }
 
     /**
      * The attributes that should be hidden for serialization.

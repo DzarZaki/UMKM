@@ -109,7 +109,7 @@
         </select>
     </div>
 
-    {{-- Kalender --}}
+    <!-- {{-- Kalender --}}
     <div class="mb-3">
         <label class="form-label">Kalender</label>
         <select name="id_kalender" class="form-control">
@@ -121,7 +121,7 @@
                 </option>
             @endforeach
         </select>
-    </div>
+    </div> -->
 
     {{-- Status --}}
     <div class="mb-3">
