@@ -46,20 +46,29 @@
         type="tel"
         class="form-modern"
         name="no_hp"
-        placeholder="Nomor WhatsApp"
-        pattern="^[0-9+]{9,15}$"
+        placeholder="Nomor WhatsApp (08xxxx / 62xxxx)"
+        pattern="^(08|62)[0-9]{8,12}$"
+        title="Nomor harus diawali 08 atau 62"
         minlength="9"
         maxlength="15"
         inputmode="numeric"
         required
         value="{{ old('no_hp') }}"
+        class="form-modern"
       >
       <!-- <small class="hint">Contoh: 0812xxxx atau +62812xxxx</small> -->
     </div>
 
     <div>
       <input class="form-modern" name="tipe_paket" placeholder="Tipe Paket (Opsional)" value="{{ old('tipe_paket') }}">
-      <small class="hint">Lihat Pricelist Kami Untuk Kemudahan</small>
+      <small class="hint">
+  <a href="https://drive.google.com/file/d/18_nfvGHXI-E4hhz19Y9fEqP8pEyh1Bnn/view"
+     target="_blank"
+     style="color:#aaa;text-decoration:underline">
+     Lihat Pricelist Kami Untuk Kemudahan
+  </a>
+</small>
+
     </div>
 
     <div>

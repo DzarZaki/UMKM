@@ -123,25 +123,27 @@
                 <div class="form-group">
                     <label>Status</label>
                     <select name="status" class="form-control">
-                        <option value="">All</option>
-                        <option value="new">New</option>
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="done">Done</option>
-                    </select>
+    <option value="">All</option>
+    <option value="new">New</option>
+    <option value="pending">Pending</option>
+    <option value="in_progress">In Progress</option>
+    <option value="done">Done</option>
+</select>
+
                 </div>
 
                 {{-- FOTOGRAFER --}}
                 <div class="form-group">
                     <label>Fotografer</label>
                     <select name="id_fotografer" class="form-control">
-                        <option value="">All</option>
-                        @foreach($listFotografer as $f)
-                            <option value="{{ $f->id }}">
-                                {{ $f->nama_fotografer }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <option value="">All</option>
+                    @foreach($fotografer as $f)
+                        <option value="{{ $f->id }}">
+                            {{ $f->nama_fotografer }}
+                        </option>
+                    @endforeach
+                </select>
+
                 </div>
 
             </div>
