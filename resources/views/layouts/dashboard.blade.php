@@ -15,7 +15,7 @@
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <!-- FullCalendar -->
-    <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/index.global.min.css">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.11/index.global.min.css"> -->
     <script src="https://unpkg.com/fullcalendar@6.1.11/index.global.min.js"></script>
 
     <style>

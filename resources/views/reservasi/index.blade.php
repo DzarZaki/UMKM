@@ -149,56 +149,120 @@
 {{ $reservasi->links('pagination::bootstrap-4') }}
 
 {{-- MODAL --}}
-<div class="modal fade" id="reservasiModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Reservasi</h5>
-        <button class="close" data-dismiss="modal">&times;</button>
+<div class="modal fade" id="reservasiModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow">
+
+      <div class="modal-header py-2 bg-white border-bottom">
+        <div class="d-flex align-items-center">
+          <h6 class="modal-title mb-0 font-weight-bold text-primary">Reservasi</h6>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <div class="modal-body">
 
-<input type="hidden" id="id_reservasi">
+      <div class="modal-body pt-3 pb-2">
+        <input type="hidden" id="id_reservasi">
 
-<div class="row">
-  <div class="col-md-6">
-    <input id="nama" class="form-control mb-2" placeholder="Nama">
-    <input id="email" class="form-control mb-2" placeholder="Email">
-    <input id="no_hp" class="form-control mb-2" placeholder="No HP">
-    <input id="tipe_paket" class="form-control mb-2" placeholder="Paket">
-    <textarea id="keterangan" class="form-control" placeholder="Keterangan"></textarea>
-  </div>
+        <div class="row">
+          <!-- KIRI -->
+          <div class="col-md-6">
+            <div class="form-group mb-2">
+              <label class="small text-muted mb-1">Nama</label>
+              <input id="nama" class="form-control form-control-sm" placeholder="Nama Klien ">
+            </div>
 
-  <div class="col-md-6">
-    <input type="date" id="tanggal" class="form-control mb-2">
-    <select id="status" class="form-control mb-2">
-      <option value="new">New</option>
-      <option value="pending">Pending</option>
-      <option value="in_progress">In Progress</option>
-      <option value="done">Done</option>
-    </select>
+            <div class="form-group mb-2">
+              <label class="small text-muted mb-1">Email</label>
+              <input id="email" type="email" class="form-control form-control-sm" placeholder="mail@mail.com">
+            </div>
 
-    <input type="time" id="waktu_mulai" class="form-control mb-2">
-    <input type="time" id="waktu_selesai" class="form-control mb-2">
+            <div class="form-group mb-2">
+              <label class="small text-muted mb-1">No HP</label>
+              <input id="no_hp" class="form-control form-control-sm" placeholder="0821xxxx">
+            </div>
 
-    <select id="user_id" class="form-control">
-      <option value="">-- pilih fotografer --</option>
-      @foreach($fotografer as $f)
-        <option value="{{ $f->id }}">
-          {{ $f->username }} - {{ ucfirst(str_replace('_',' ', $f->role)) }}
-        </option>
-      @endforeach
-    </select>
-  </div>
-</div>
+            <div class="form-group mb-2">
+              <label class="small text-muted mb-1">Tipe Paket</label>
+              <input id="tipe_paket" class="form-control form-control-sm" placeholder="(opsional)">
+            </div>
 
+            <div class="form-group mb-0">
+              <label class="small text-muted mb-1">Keterangan</label>
+              <textarea id="keterangan" class="form-control form-control-sm" rows="4" placeholder="(opsional)"></textarea>
+            </div>
+          </div>
+
+          <!-- KANAN -->
+          <div class="col-md-6">
+            <div class="form-group mb-2">
+              <label class="small text-muted mb-1">Tanggal</label>
+              <input type="date" id="tanggal" class="form-control form-control-sm">
+            </div>
+
+            <!-- Row: Status + Fotografer (2 kolom) -->
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="small text-muted mb-1">Status</label>
+                <select id="status" class="form-control form-control-sm">
+                  <option value="new">New</option>
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+
+              <div class="form-group col-md-6 mb-2">
+                <label class="small text-muted mb-1">Fotografer</label>
+                <select id="user_id" class="form-control form-control-sm">
+                  <option value="">-- pilih fotografer --</option>
+                  @foreach($fotografer as $f)
+                    <option value="{{ $f->id }}">
+                      {{ $f->username }} - {{ ucfirst(str_replace('_',' ', $f->role)) }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+
+            <!-- Row: Jam Mulai + Jam Selesai (2 kolom) -->
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="small text-muted mb-1">Waktu Mulai</label>
+                <input type="time" id="waktu_mulai" class="form-control form-control-sm" value="08:00">
+              </div>
+
+              <div class="form-group col-md-6 mb-2">
+                <label class="small text-muted mb-1">Waktu Selesai</label>
+                <input type="time" id="waktu_selesai" class="form-control form-control-sm" value="09:00">
+              </div>
+            </div>
+
+            <div class="alert alert-light border small mb-0 py-2">
+              <i class="fas fa-info-circle mr-1 text-muted"></i>
+              Pastikan waktu selesai <b>lebih besar</b> dari waktu mulai.
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" id="btnSaveModal">Simpan</button>
+
+      <div class="modal-footer py-2 bg-white border-top d-flex justify-content-between">
+        <!-- kalau nanti kamu butuh delete -->
+
+
+        <div class="ml-auto">
+          <button type="button" class="btn btn-light btn-sm mr-2" data-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btnSaveModal">
+            <i class="fas fa-save mr-1"></i> Simpan
+          </button>
+        </div>
       </div>
+
     </div>
   </div>
 </div>
+
 @endsection
 
 @push('scripts')
