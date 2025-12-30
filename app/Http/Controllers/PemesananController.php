@@ -112,19 +112,19 @@ class PemesananController extends Controller
         );
     }
 
-    Reservasi::create([
-        'nama'          => $data['nama'],
-        'email'         => $data['email'],
-        'no_hp'         => $data['no_hp'],
-        'tipe_paket'    => $data['tipe_paket'] ?? null,
-        'tanggal'       => $data['tanggal'],
-        'waktu_mulai'   => $mulai,
-        'waktu_selesai' => $selesai,
-        'keterangan'    => $keteranganFinal,
-        'id_fotografer' => null,
-        'id_kalender'   => null,
-        'status'        => 'new',
-    ]);
+   Reservasi::create([
+    'user_id'       => null, // BELUM DITUGASKAN KE FOTOGRAFER
+    'nama'          => $data['nama'],
+    'email'         => $data['email'],
+    'no_hp'         => $data['no_hp'],
+    'tipe_paket'    => $data['tipe_paket'] ?? null,
+    'tanggal'       => $data['tanggal'],
+    'waktu_mulai'   => $mulai,
+    'waktu_selesai' => $selesai,
+    'keterangan'    => $keteranganFinal,
+    'status'        => 'new',
+]);
+
 
     return back()->with(
         'success',

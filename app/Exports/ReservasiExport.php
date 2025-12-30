@@ -52,18 +52,24 @@ class ReservasiExport implements
      * ISI PER BARIS
      */
     public function map($r): array
-    {
-        return [
-            $r->nama,
-            $r->email,
-            $r->no_hp,
-            $r->fotografer?->nama_fotografer ?? '-',
-            $r->tipe_paket ?? '-',
-            $r->tanggal,
-            substr($r->waktu_mulai,0,5).' - '.substr($r->waktu_selesai,0,5),
-            ucfirst(str_replace('_',' ', $r->status)),
-        ];
-    }
+{
+    return [
+        $r->nama,
+        $r->email,
+        $r->no_hp,
+
+        // ✅ FOTOGRAFER DARI USERS
+        $r->user
+            ? $r->user->username.' - '.ucfirst(str_replace('_',' ', $r->user->role))
+            : '-',
+
+        $r->tipe_paket ?? '-',
+        $r->tanggal,
+        substr($r->waktu_mulai,0,5).' - '.substr($r->waktu_selesai,0,5),
+        ucfirst(str_replace('_',' ', $r->status)),
+    ];
+}
+
 
     /**
      * LEBAR KOLOM

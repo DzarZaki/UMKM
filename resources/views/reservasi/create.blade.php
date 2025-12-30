@@ -96,18 +96,19 @@
     </div>
 
     {{-- Fotografer --}}
-    <div class="mb-3">
-        <label class="form-label">Fotografer / Videografer</label>
-        <select name="id_fotografer" class="form-control">
-            <option value="">-- Pilih Fotografer / Videografer --</option>
-            @foreach ($fotografer as $f)
-                <option value="{{ $f->id }}"
-                    {{ old('id_fotografer') == $f->id ? 'selected' : '' }}>
-                    {{ $f->username }} ({{ $f->role }})
-                </option>
-            @endforeach
-        </select>
-    </div>
+<div class="mb-3">
+    <label class="form-label">Fotografer / Videografer</label>
+    <select name="user_id" class="form-control">
+        <option value="">-- Pilih Fotografer / Videografer --</option>
+        @foreach ($usersFotografer as $u)
+            <option value="{{ $u->id }}"
+                {{ old('user_id') == $u->id ? 'selected' : '' }}>
+                {{ $u->username }} - {{ ucfirst(str_replace('_',' ', $u->role)) }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
     <!-- {{-- Kalender --}}
     <div class="mb-3">
@@ -147,7 +148,8 @@
 document.querySelector('form').addEventListener('submit', function (e) {
     const email = document.querySelector('input[name="email"]').value.trim();
     const noHp = document.querySelector('input[name="no_hp"]').value.trim();
-    const fotografer = document.querySelector('select[name="id_fotografer"]').value;
+    const fotografer = document.querySelector('select[name="user_id"]').value;
+
 
     // Validasi Email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -175,12 +177,6 @@ document.querySelector('form').addEventListener('submit', function (e) {
         return;
     }
 
-    // Validasi Fotografer
-    if (!fotografer) {
-        alert('Silakan pilih fotografer / videografer');
-        e.preventDefault();
-        return;
-    }
 });
 </script>
 

@@ -1,53 +1,47 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<h1 class="h3 mb-4 text-gray-800">Fotografer</h1>
-
-<button class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalTambah">
-  + Tambah Fotografer
-</button>
+<h1 class="h3 mb-4">Fotografer</h1>
 
 @if(session('success'))
   <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
+<button class="btn btn-success mb-3" data-toggle="modal" data-target="#createModal">
+  + Tambah Fotografer
+</button>
+
 <div class="card shadow">
-  <div class="card-body">
-    <table class="table table-bordered table-striped">
+  <div class="card-body p-0">
+    <table class="table table-bordered mb-0">
       <thead class="bg-light">
         <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>User</th>
+          <th>Nama (Username)</th>
           <th>Role</th>
-          <th>Spesialisasi</th>
-          <th>Reservasi</th>
-          <th width="150">Aksi</th>
+          <th width="180">Aksi</th>
         </tr>
       </thead>
       <tbody>
         @forelse($fotografer as $f)
         <tr>
-          <td>{{ $loop->iteration }}</td>
-          <td>{{ $f->nama_fotografer }}</td>
-          <td>{{ $f->user->username ?? '-' }}</td>
-          <td>{{ $f->user->role ?? '-' }}</td>
-          <td>{{ $f->spesialisasi ?? '-' }}</td>
-          <td>{{ $f->reservasi_count }}</td>
+          <td>{{ $f->username }}</td>
+          <td>{{ ucfirst(str_replace('_',' ', $f->role)) }}</td>
           <td>
+            <!-- EDIT -->
             <button class="btn btn-sm btn-warning"
               data-toggle="modal"
-              data-target="#modalEdit{{ $f->id }}">
+              data-target="#editModal{{ $f->id }}">
               Edit
             </button>
 
-            <form action="{{ route('fotografer.destroy', $f->id) }}"
+            <!-- HAPUS -->
+            <form action="{{ route('fotografer.destroy',$f->id) }}"
                   method="POST"
                   class="d-inline">
               @csrf
               @method('DELETE')
-              <button class="btn btn-sm btn-danger"
-                      onclick="return confirm('Hapus fotografer?')">
+              <button onclick="return confirm('Hapus fotografer?')"
+                      class="btn btn-sm btn-danger">
                 Hapus
               </button>
             </form>
@@ -55,41 +49,47 @@
         </tr>
 
         {{-- MODAL EDIT --}}
-        <div class="modal fade" id="modalEdit{{ $f->id }}">
+        <div class="modal fade" id="editModal{{ $f->id }}">
           <div class="modal-dialog">
             <form method="POST"
-                  action="{{ route('fotografer.update', $f->id) }}"
+                  action="{{ route('fotografer.update',$f->id) }}"
                   class="modal-content">
               @csrf
               @method('PUT')
 
               <div class="modal-header">
-                <h5 class="modal-title">Edit Fotografer</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5>Edit Fotografer</h5>
+                <button class="close" data-dismiss="modal">&times;</button>
               </div>
 
               <div class="modal-body">
                 <div class="form-group">
-                  <label>Nama Fotografer</label>
-                  <input type="text"
-                         name="nama_fotografer"
+                  <label>Nama (Username)</label>
+                  <input name="username"
                          class="form-control"
-                         value="{{ $f->nama_fotografer }}"
+                         value="{{ $f->username }}"
                          required>
                 </div>
 
                 <div class="form-group">
-                  <label>Spesialisasi</label>
-                  <input type="text"
-                         name="spesialisasi"
-                         class="form-control"
-                         value="{{ $f->spesialisasi }}">
+                  <label>Role</label>
+                  <select name="role" class="form-control">
+                    <option value="fotografer" {{ $f->role=='fotografer'?'selected':'' }}>Fotografer</option>
+                    <option value="videografer" {{ $f->role=='videografer'?'selected':'' }}>Videografer</option>
+                    <option value="fotografer_videografer" {{ $f->role=='fotografer_videografer'?'selected':'' }}>
+                      Fotografer & Videografer
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Password (opsional)</label>
+                  <input type="password" name="password" class="form-control">
                 </div>
               </div>
 
               <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <button class="btn btn-success">Simpan</button>
+                <button class="btn btn-primary">Simpan</button>
               </div>
             </form>
           </div>
@@ -97,7 +97,7 @@
 
         @empty
         <tr>
-          <td colspan="7" class="text-center text-muted">
+          <td colspan="3" class="text-center text-muted">
             Belum ada fotografer
           </td>
         </tr>
@@ -107,8 +107,8 @@
   </div>
 </div>
 
-{{-- MODAL TAMBAH --}}
-<div class="modal fade" id="modalTambah">
+{{-- MODAL CREATE --}}
+<div class="modal fade" id="createModal">
   <div class="modal-dialog">
     <form method="POST"
           action="{{ route('fotografer.store') }}"
@@ -116,41 +116,32 @@
       @csrf
 
       <div class="modal-header">
-        <h5 class="modal-title">Tambah Fotografer</h5>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5>Tambah Fotografer</h5>
+        <button class="close" data-dismiss="modal">&times;</button>
       </div>
 
       <div class="modal-body">
         <div class="form-group">
-          <label>User</label>
-          <select name="user_id" class="form-control" required>
-            <option value="">-- pilih user --</option>
-            @foreach($users as $u)
-              <option value="{{ $u->id }}">
-                {{ $u->username }} ({{ $u->role }})
-              </option>
-            @endforeach
+          <label>Nama (Username)</label>
+          <input name="username" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Role</label>
+          <select name="role" class="form-control">
+            <option value="fotografer">Fotografer</option>
+            <option value="videografer">Videografer</option>
+            <option value="fotografer_videografer">Fotografer & Videografer</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Nama Fotografer</label>
-          <input type="text"
-                 name="nama_fotografer"
-                 class="form-control"
-                 required>
-        </div>
-
-        <div class="form-group">
-          <label>Spesialisasi</label>
-          <input type="text"
-                 name="spesialisasi"
-                 class="form-control">
+          <label>Password</label>
+          <input type="password" name="password" class="form-control" required>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
         <button class="btn btn-primary">Simpan</button>
       </div>
     </form>

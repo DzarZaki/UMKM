@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('reservasi', function (Blueprint $table) {
     $table->id();
 
-    $table->foreignId('id_fotografer')
-      ->nullable()
-      ->constrained('fotografer')
-      ->nullOnDelete();
+    $table->foreignId('user_id')
+    ->nullable()
+    ->constrained('users')
+    ->nullOnDelete();
+
 
     $table->string('nama');
     $table->string('email');

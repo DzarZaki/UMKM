@@ -2,51 +2,27 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Mass assignable
      */
     protected $fillable = [
+        'name',
         'username',
+        'email',
         'password',
         'role',
     ];
 
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isFotografer()
-    {
-        return $this->role === 'fotografer';
-    }
-
-    public function fotografer()
-    {
-        return $this->hasOne(Fotografer::class);
-    }
-
-    // public function kalender()
-    // {
-    //     return $this->hasMany(Kalender::class);
-    // }
-
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Hidden attributes
      */
     protected $hidden = [
         'password',
@@ -54,14 +30,40 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Casts
      */
     protected function casts(): array
     {
         return [
             'password' => 'hashed',
         ];
+    }
+
+    /* =========================
+     |  ROLE HELPERS
+     ========================= */
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isFotografer(): bool
+    {
+        return in_array($this->role, [
+            'fotografer',
+            'videografer',
+            'fotografer_videografer'
+        ]);
+    }
+
+    /* =========================
+     |  RELATIONS
+     ========================= */
+
+    // 🔑 USER → RESERVASI
+    public function reservasi()
+    {
+        return $this->hasMany(Reservasi::class);
     }
 }

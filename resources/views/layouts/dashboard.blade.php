@@ -19,58 +19,29 @@
     <script src="https://unpkg.com/fullcalendar@6.1.11/index.global.min.js"></script>
 
     <style>
-        /* FULLCALENDAR STATUS COLORS */
-        .fc-event.status-new {
-            background-color: #e2e6ea !important;
-            border-color: #e2e6ea !important;
-            color: #212529 !important;
-        }
-        .fc-event.status-pending {
-            background-color: #f6c23e !important;
-            border-color: #f6c23e !important;
-            color: #212529 !important;
-        }
-        .fc-event.status-in_progress {
-            background-color: #36b9cc !important;
-            border-color: #36b9cc !important;
-            color: #ffffff !important;
-        }
-        .fc-event.status-done {
-            background-color: #1cc88a !important;
-            border-color: #1cc88a !important;
-            color: #ffffff !important;
-        }
-        .fc-event:hover {
-            filter: brightness(0.95);
-        }
+        .fc-event.status-new { background:#e2e6ea;color:#212529 }
+        .fc-event.status-pending { background:#f6c23e;color:#212529 }
+        .fc-event.status-in_progress { background:#36b9cc;color:#fff }
+        .fc-event.status-done { background:#1cc88a;color:#fff }
     </style>
 </head>
 
 <body id="page-top" class="sidebar-toggled">
-
-
 <div id="wrapper">
 
-    {{-- SIDEBAR --}}
     @include('partials.sidebar-dash')
 
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
-
-            {{-- TOPBAR --}}
             @include('partials.topbar-dash')
 
-            {{-- PAGE CONTENT --}}
             <div class="container-fluid">
                 @yield('content')
             </div>
-
         </div>
 
-        {{-- FOOTER --}}
         @include('partials.footer-dash')
     </div>
-
 </div>
 
 <a class="scroll-to-top rounded" href="#page-top">
@@ -79,7 +50,6 @@
 
 @include('partials.logout-modal')
 
-<!-- JS -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -92,11 +62,18 @@
 {{-- ============================= --}}
 @if(auth()->check() && auth()->user()->role === 'admin')
 @php
-    // 🔑 AMAN: ambil langsung dari model, tidak tergantung controller
-    $listFotografer = \App\Models\Fotografer::orderBy('nama_fotografer')->get();
+/**
+ * ✅ FOTOGRAFER DARI USERS (FINAL & AMAN)
+ * Blade tidak boleh pakai `use`
+ */
+$listFotografer = \App\Models\User::whereIn('role', [
+    'fotografer',
+    'videografer',
+    'fotografer_videografer'
+])->orderBy('username')->get();
 @endphp
 
-<div class="modal fade" id="exportReportModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="exportReportModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="GET"
               action="{{ route('reservasi.export.excel') }}"
@@ -124,32 +101,25 @@
                 <div class="form-group">
                     <label>Status</label>
                     <select name="status" class="form-control">
-    <option value="">All</option>
-    <option value="new">New</option>
-    <option value="pending">Pending</option>
-    <option value="in_progress">In Progress</option>
-    <option value="done">Done</option>
-</select>
-
+                        <option value="">All</option>
+                        <option value="new">New</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="done">Done</option>
+                    </select>
                 </div>
 
-                {{-- FOTOGRAFER --}}
+                {{-- FOTOGRAFER (USERS) --}}
                 <div class="form-group">
                     <label>Fotografer</label>
-<select name="id_fotografer" class="form-control">
-    <option value="">All</option>
-
-    @isset($fotografer)
-        @foreach($fotografer as $f)
-            <option value="{{ $f->id }}">
-                {{ $f->nama_fotografer }}
-            </option>
-        @endforeach
-    @endisset
-
-</select>
-
-
+                    <select name="user_id" class="form-control">
+                        <option value="">All</option>
+                        @foreach($listFotografer as $f)
+                            <option value="{{ $f->id }}">
+                                {{ $f->username }} - {{ ucfirst(str_replace('_',' ', $f->role)) }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
             </div>

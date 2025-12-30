@@ -29,16 +29,19 @@ class ReservasiKalenderController extends Controller
             ->whereDate('tanggal', '<', $endDate);
 
         /*
-        |--------------------------------------------------------------------------
-        | ROLE FILTER (INI KUNCI UTAMA)
-        |--------------------------------------------------------------------------
+        |------------------------------------------------------------------
+        | ROLE FILTER (FINAL & BENAR)
+        |------------------------------------------------------------------
         */
         if (auth()->check()) {
             $user = auth()->user();
 
-            // kalau fotografer / videografer → batasi data
-            if (in_array($user->role, ['fotografer','videografer','fotografer_videografer'])) {
-                $query->where('id_fotografer', $user->id);
+            if (in_array($user->role, [
+                'fotografer',
+                'videografer',
+                'fotografer_videografer'
+            ])) {
+                $query->where('user_id', $user->id);
             }
         }
 
@@ -47,7 +50,7 @@ class ReservasiKalenderController extends Controller
             $query->where('status', '!=', 'new');
         }
 
-        // optional filters (ADMIN)
+        // filter status (ADMIN)
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
         }
@@ -56,13 +59,17 @@ class ReservasiKalenderController extends Controller
             $query->where('tipe_paket', $request->string('tipe_paket'));
         }
 
-        if ($request->filled('id_fotografer')) {
-            $query->where('id_fotografer', $request->integer('id_fotografer'));
+        // 🔑 FILTER FOTOGRAFER (USER ID)
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->integer('user_id'));
         }
 
         $events = $query->get()->map(function ($r) use ($tz) {
-            $start = Carbon::parse($r->tanggal.' '.$r->waktu_mulai, $tz)->format('Y-m-d\TH:i:s');
-            $end   = Carbon::parse($r->tanggal.' '.$r->waktu_selesai, $tz)->format('Y-m-d\TH:i:s');
+            $start = Carbon::parse($r->tanggal.' '.$r->waktu_mulai, $tz)
+                        ->format('Y-m-d\TH:i:s');
+
+            $end   = Carbon::parse($r->tanggal.' '.$r->waktu_selesai, $tz)
+                        ->format('Y-m-d\TH:i:s');
 
             return [
                 'id'    => (string) $r->id,
@@ -70,14 +77,18 @@ class ReservasiKalenderController extends Controller
                 'start' => $start,
                 'end'   => $end,
                 'classNames' => ['status-'.$r->status],
+
+                // ⬇️ INI KUNCI FRONTEND
                 'extendedProps' => [
-                    'nama' => $r->nama,
-                    'email' => $r->email,
-                    'no_hp' => $r->no_hp,
+                    'nama'       => $r->nama,
+                    'email'      => $r->email,
+                    'no_hp'      => $r->no_hp,
                     'tipe_paket' => $r->tipe_paket,
                     'keterangan' => $r->keterangan,
-                    'status' => $r->status,
-                    'id_fotografer' => $r->id_fotografer,
+                    'status'     => $r->status,
+
+                    // FINAL
+                    'user_id'    => $r->user_id,
                 ],
             ];
         });

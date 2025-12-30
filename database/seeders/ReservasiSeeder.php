@@ -25,7 +25,7 @@ class ReservasiSeeder extends Seeder
             $paket = ['Basic','Premium','Wedding','Prewedding'][($i - 1) % 4];
 
             return [
-                'id_fotografer' => null, // aman walau fotografer belum di-assign
+                'user_id' => null, // belum ditugaskan
 
                 'nama'  => "Klien {$status} {$i}",
                 'email' => "klien_{$status}_{$i}@example.com",

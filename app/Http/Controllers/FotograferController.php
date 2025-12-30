@@ -2,69 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Fotografer;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class FotograferController extends Controller
 {
+    /**
+     * LIST FOTOGRAFER
+     */
     public function index()
     {
-        $fotografer = Fotografer::with('user')
-            ->withCount('reservasi')
-            ->orderBy('nama_fotografer')
-            ->get();
-
-        // user yg bisa dipilih (role fotografer / videografer / gabungan)
-        $users = User::whereIn('role', [
+        $fotografer = User::whereIn('role', [
             'fotografer',
             'videografer',
             'fotografer_videografer'
-        ])->get();
+        ])->orderBy('username')->get();
 
-        return view('fotografer.index', compact('fotografer', 'users'));
+        return view('fotografer.index', compact('fotografer'));
     }
 
+    /**
+     * STORE (CREATE)
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id'        => 'required|exists:users,id|unique:fotografer,user_id',
-            'nama_fotografer'=> 'required|string|max:255',
-            'spesialisasi'   => 'nullable|string|max:255',
+        $data = $request->validate([
+            'username' => 'required|string|max:255|unique:users,username',
+            'role' => ['required', Rule::in([
+                'fotografer',
+                'videografer',
+                'fotografer_videografer'
+            ])],
+            'password' => 'required|min:6',
         ]);
 
-        Fotografer::create($request->all());
+        User::create([
+            'username' => $data['username'],
+            'role'     => $data['role'],
+            'password' => Hash::make($data['password']),
+        ]);
 
-        return redirect()
-            ->route('fotografer.index')
-            ->with('success', 'Fotografer berhasil ditambahkan');
+        return back()->with('success', 'Fotografer berhasil ditambahkan');
     }
 
+    /**
+     * UPDATE
+     */
     public function update(Request $request, $id)
     {
-        $fotografer = Fotografer::findOrFail($id);
+        $user = User::findOrFail($id);
 
-        $request->validate([
-            'nama_fotografer'=> 'required|string|max:255',
-            'spesialisasi'   => 'nullable|string|max:255',
+        $data = $request->validate([
+            'username' => [
+                'required','string','max:255',
+                Rule::unique('users','username')->ignore($user->id)
+            ],
+            'role' => ['required', Rule::in([
+                'fotografer',
+                'videografer',
+                'fotografer_videografer'
+            ])],
+            'password' => 'nullable|min:6',
         ]);
 
-        $fotografer->update($request->only([
-            'nama_fotografer',
-            'spesialisasi'
-        ]));
+        $user->username = $data['username'];
+        $user->role = $data['role'];
 
-        return redirect()
-            ->route('fotografer.index')
-            ->with('success', 'Fotografer berhasil diperbarui');
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Fotografer berhasil diupdate');
     }
 
+    /**
+     * DELETE
+     */
     public function destroy($id)
     {
-        Fotografer::findOrFail($id)->delete();
+        User::findOrFail($id)->delete();
 
-        return redirect()
-            ->route('fotografer.index')
-            ->with('success', 'Fotografer berhasil dihapus');
+        return back()->with('success', 'Fotografer berhasil dihapus');
     }
 }

@@ -2,21 +2,19 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\{
-    Fotografer,
-    Reservasi
-};
+use App\Models\Reservasi;
+use App\Models\User;
+
 use App\Http\Controllers\{
     LoginController,
     GaleriController,
-    ContactController,
     PortfolioController,
     ReservasiController,
     HomeController,
-    KalenderController,
     KalenderMirrorController,
     PemesananController,
-    ReservasiKalenderController
+    ReservasiKalenderController,
+    FotograferController
 };
 
 /*
@@ -25,9 +23,6 @@ use App\Http\Controllers\{
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-Route::post('/contact', [ContactController::class, 'store'])
-    ->name('contact.store');
 
 Route::prefix('portfolio')->name('portfolio.')->group(function () {
     Route::get('/prewedding', [PortfolioController::class, 'prewedding'])->name('prewedding');
@@ -53,18 +48,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'authentication']);
 });
 
-// Route::post('/logout', [LoginController::class, 'logout'])
-//     ->name('logout')
-//     ->middleware('auth');
-
-
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])
-        ->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::get('/calendar/events', [ReservasiKalenderController::class, 'events'])
         ->name('calendar.events');
-});    
+});
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN DASHBOARD
@@ -72,15 +62,14 @@ Route::middleware('auth')->group(function () {
 */
 Route::middleware(['auth', 'checkRole:admin'])->group(function () {
 
-
-    Route::get('/reservasi/export', [ReservasiController::class, 'export'])
-    ->name('reservasi.export');
-
+    /*
+    | DASHBOARD ADMIN
+    */
     Route::get('/dashboard', function (Request $request) {
 
         $status = $request->query('status');
 
-        $reservasiQuery = Reservasi::query()->latest();
+        $reservasiQuery = Reservasi::latest();
 
         if ($status) {
             $reservasiQuery->where('status', $status);
@@ -89,7 +78,14 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         }
 
         $reservasi_list = $reservasiQuery->limit(30)->get();
-        $fotografer = Fotografer::orderBy('nama_fotografer')->get();
+
+        // 🔑 FOTOGRAFER DIAMBIL DARI USERS
+       $usersFotografer = User::whereIn('role', [
+    'fotografer',
+    'videografer',
+    'fotografer_videografer'
+])->orderBy('username')->get();
+
 
         $stats = [
             'new'         => Reservasi::where('status','new')->count(),
@@ -99,15 +95,19 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         ];
 
         return view('dashboard', compact(
-            'reservasi_list',
-            'fotografer',
-            'stats'
-        ));
+    'reservasi_list',
+    'usersFotografer',
+    'stats'
+));
     })->name('dashboard');
 
+    /*
+    | GALERI & RESERVASI
+    */
     Route::resource('galeri', GaleriController::class);
     Route::resource('reservasi', ReservasiController::class);
 
+    // 🔑 AJAX / MODAL RESERVASI
     Route::prefix('reservasi')->group(function () {
         Route::post('/store', [ReservasiController::class, 'storeJson']);
         Route::post('/update', [ReservasiController::class, 'updateJson']);
@@ -115,27 +115,19 @@ Route::middleware(['auth', 'checkRole:admin'])->group(function () {
         Route::post('/delete', [ReservasiController::class, 'deleteJson']);
     });
 
-    Route::prefix('kalender')->group(function () {
-        Route::get('/load',   [KalenderController::class, 'load']);
-        Route::post('/store', [KalenderController::class, 'store']);
-        Route::post('/update',[KalenderController::class, 'update']);
-        Route::post('/delete',[KalenderController::class, 'destroy']);
-    });
+    /*
+    | EXPORT
+    */
+    Route::get('/reservasi/export', [ReservasiController::class, 'export'])
+        ->name('reservasi.export');
 
-    // EXPORT
     Route::get('/reservasi/export/excel', [ReservasiController::class, 'exportExcel'])
-                ->name('reservasi.export.excel');
-
-
-    Route::resource('fotografer', \App\Http\Controllers\FotograferController::class)
-    ->except(['show','create','edit']);
-
-
+        ->name('reservasi.export.excel');
 });
 
 /*
 |--------------------------------------------------------------------------
-| FOTOGRAFER / VIDEOGRAFER DASHBOARD  ✅ DI LUAR ADMIN
+| FOTOGRAFER / VIDEOGRAFER DASHBOARD
 |--------------------------------------------------------------------------
 */
 Route::middleware([
@@ -145,41 +137,32 @@ Route::middleware([
 
     Route::get('/dashboard-fotografer', function () {
 
-    $user = auth()->user();
+        $user = auth()->user();
 
-    // 🔑 AMBIL DATA FOTOGRAFER DARI USER LOGIN
-    $fotograferModel = Fotografer::where('user_id', $user->id)->first();
+        // LIST RESERVASI KHUSUS USER LOGIN
+        $reservasi_list = Reservasi::where('user_id', $user->id)
+            ->latest()
+            ->limit(20)
+            ->get();
 
-    // 🚨 JIKA USER BELUM TERHUBUNG KE FOTOGRAFER
-    if (!$fotograferModel) {
-        abort(403, 'Akun fotografer belum terhubung ke data fotografer.');
-    }
+        $stats = [
+            'assigned' => Reservasi::where('user_id', $user->id)->count(),
+            'done'     => Reservasi::where('user_id', $user->id)
+                            ->where('status', 'done')
+                            ->count(),
+        ];
+        $usersFotografer = User::whereIn('role', [
+    'fotografer',
+    'videografer',
+    'fotografer_videografer'
+])->orderBy('username')->get();
 
-    $idFotografer = $fotograferModel->id;
-
-    // LIST RESERVASI KHUSUS FOTOGRAFER
-    $reservasi_list = Reservasi::where('id_fotografer', $idFotografer)
-        ->latest()
-        ->limit(20)
-        ->get();
-
-    // STATISTIK KHUSUS FOTOGRAFER
-    $stats = [
-        'assigned' => Reservasi::where('id_fotografer', $idFotografer)->count(),
-        'done' => Reservasi::where('id_fotografer', $idFotografer)
-                    ->where('status', 'done')
-                    ->count(),
-    ];
-
-    // dropdown fotografer disembunyikan
-    $fotografer = collect();
-
-    return view('dashboard', compact(
-        'reservasi_list',
-        'fotografer',
-        'stats'
-    ));
-})->name('dashboard.fotografer');
+        return view('dashboard', compact(
+            'reservasi_list',
+            'stats',
+            'usersFotografer'
+        ));
+    })->name('dashboard.fotografer');
 });
 
 /*
@@ -193,3 +176,10 @@ Route::get('/booking/kalender', [KalenderMirrorController::class, 'index'])
 Route::get('/booking/kalender/events', [KalenderMirrorController::class, 'events'])
     ->name('booking.kalender.events')
     ->middleware('throttle:60,1');
+
+Route::middleware(['auth', 'checkRole:admin'])->group(function () {
+
+    // === FOTOGRAFER (CRUD dari tabel users) ===
+    Route::resource('fotografer', FotograferController::class);
+
+});

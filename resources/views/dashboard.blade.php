@@ -221,7 +221,7 @@
                     data-email="{{ e($r->email) }}"
                     data-tipe_paket="{{ e($r->tipe_paket ?? '') }}"
                     data-status="{{ $r->status }}"
-                    data-id_fotografer="{{ $r->id_fotografer ?? '' }}"
+                    data-user_id="{{ $r->user_id ?? '' }}"
                     data-keterangan="{{ e($r->keterangan ?? '') }}"
                     data-waktu_mulai="{{ substr($r->waktu_mulai,0,5) }}"
                     data-waktu_selesai="{{ substr($r->waktu_selesai,0,5) }}"
@@ -370,14 +370,15 @@
 
               <div class="form-group col-md-6 mb-2">
                 <label class="mb-1">Fotografer</label>
-                <select id="fotografer" class="form-control">
-                  <option value="">-- pilih fotografer --</option>
-                  @foreach($fotografer as $f)
-                    <option value="{{ $f->id }}">
-                      {{ $f->nama_fotografer }}{{ $f->spesialisasi ? ' - '.$f->spesialisasi : '' }}
-                    </option>
-                  @endforeach
-                </select>
+                <select id="user_id" class="form-control">
+  <option value="">-- pilih fotografer --</option>
+  @foreach($usersFotografer as $u)
+    <option value="{{ $u->id }}">
+      {{ $u->username }} - {{ ucfirst(str_replace('_',' ', $u->role)) }}
+    </option>
+  @endforeach
+</select>
+
               </div>
             </div>
 
@@ -433,7 +434,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const tipe_paket   = document.getElementById('tipe_paket');
   const keterangan   = document.getElementById('keterangan');
   const statusEl     = document.getElementById('status');
-  const fotograferEl = document.getElementById('fotografer');
+  const fotograferEl = document.getElementById('user_id');
+
 
   let selectedDate = null;
 
@@ -548,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (tipe_paket) tipe_paket.value = e.extendedProps.tipe_paket ?? '';
       if (keterangan) keterangan.value = e.extendedProps.keterangan ?? '';
       if (statusEl) statusEl.value = e.extendedProps.status ?? '';
-      if (fotograferEl) fotograferEl.value = e.extendedProps.id_fotografer ?? '';
+      if (fotograferEl) fotograferEl.value = e.extendedProps.user_id ?? '';
 
       start_time.value = `${pad(e.start.getHours())}:${pad(e.start.getMinutes())}`;
       end_time.value   = e.end ? `${pad(e.end.getHours())}:${pad(e.end.getMinutes())}` : '';
@@ -559,42 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
 
-    // EDIT (click existing event) EDIT RESERVASI PAKE KLIK
-    // eventClick(info) {
-    //   const e = info.event;
-
-    //   id_reservasi.value = e.id;
-
-    //   // ambil dari extendedProps (sesuai controller events)
-    //   nama.value     = e.extendedProps.nama ?? '';
-    //   nomor_hp.value = e.extendedProps.no_hp ?? '';
-    //   email.value    = e.extendedProps.email ?? '';
-
-    //   if (tipe_paket) tipe_paket.value = e.extendedProps.tipe_paket ?? '';
-    //   if (keterangan) keterangan.value = e.extendedProps.keterangan ?? '';
-    //   if (statusEl) statusEl.value = e.extendedProps.status ?? 'pending';
-    //   if (fotograferEl) fotograferEl.value = e.extendedProps.id_fotografer ?? '';
-
-    //   start_time.value = `${pad(e.start.getHours())}:${pad(e.start.getMinutes())}`;
-    //   end_time.value   = e.end ? `${pad(e.end.getHours())}:${pad(e.end.getMinutes())}` : '';
-
-    //   selectedDate = toLocalDateStr(e.start);
-
-    //   deleteBtn.classList.remove('d-none');
-    //   showModal();
-    // },
-
-    // DRAG KALENDER
-    // eventDrop: async function(info) {
-    //   try { await updateEventTime(info.event); }
-    //   catch (e) { info.revert(); alert('Gagal update (drag).'); }
-    // },
-
-    // RESIZE KALENDER
-    // eventResize: async function(info) {
-    //   try { await updateEventTime(info.event); }
-    //   catch (e) { info.revert(); alert('Gagal update (resize).'); }
-    // }
+   
   });
 
   calendar.render();
@@ -649,7 +616,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const payloadStore = {
       id: isUpdate ? id_reservasi.value : null,
-      id_fotografer: fotograferEl ? (fotograferEl.value || null) : null,
+      user_id: fotograferEl ? (fotograferEl.value || null) : null,
+
 
       nama: nama.value,
       email: email.value,
@@ -743,7 +711,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const email = document.getElementById('email');
   const tipe_paket = document.getElementById('tipe_paket');
   const statusEl = document.getElementById('status');
-  const fotograferEl = document.getElementById('fotografer');
+  const fotograferEl = document.getElementById('user_id');
   const keterangan = document.getElementById('keterangan');
   const start_time = document.getElementById('start_time');
   const end_time = document.getElementById('end_time');
@@ -774,7 +742,8 @@ document.addEventListener('DOMContentLoaded', function () {
       email.value = btn.dataset.email || '';
       if (tipe_paket) tipe_paket.value = btn.dataset.tipe_paket || '';
       if (statusEl) statusEl.value = btn.dataset.status || 'pending';
-      if (fotograferEl) fotograferEl.value = btn.dataset.id_fotografer || '';
+      if (fotograferEl) fotograferEl.value = btn.dataset.user_id || '';
+
       if (keterangan) keterangan.value = btn.dataset.keterangan || '';
 
       // time inputs butuh HH:MM
@@ -796,13 +765,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @endpush
 
-<!-- <style>
-/* status */
-.status-new { background:#e2e6ea !important; border-color:#e2e6ea !important; color:#111 !important; }
-.status-pending { background:#f6c23e !important; border-color:#f6c23e !important; }
-.status-in_progress { background:#36b9cc !important; border-color:#36b9cc !important; }
-.status-done { background:#1cc88a !important; border-color:#1cc88a !important; }
 
-/* opsional: paket (kalau lo kirim class paket-xxx) */
-.paket-wedding { background:#4e73df !important; border-color:#4e73df !important; }
-</style> -->

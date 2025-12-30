@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Reservasi extends Model
 {
@@ -12,7 +13,7 @@ class Reservasi extends Model
     protected $table = 'reservasi';
 
     protected $fillable = [
-        'id_fotografer',
+        'user_id',
         // 'id_kalender',
         'nama',
         'email',
@@ -24,9 +25,9 @@ class Reservasi extends Model
         'keterangan',
         'status',
     ];
-    public function fotografer()
+    public function user()
 {
-    return $this->belongsTo(\App\Models\Fotografer::class, 'id_fotografer');
+    return $this->belongsTo(User::class, 'user_id');
 }
 
 }
